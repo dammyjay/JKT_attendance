@@ -158,7 +158,7 @@ app.post("/login", async (req, res) => {
 
   try {
     // Shortcut for hardcoded admin
-    if (email === "admin@calicare.com" && password === "Admin123") {
+    if (email === "admin@jkthub.com" && password === "Admin123") {
       req.session.user = {
         email,
         role: "admin",
@@ -189,7 +189,14 @@ app.post("/login", async (req, res) => {
       return res.redirect("/Admin/admin.html");
     } else if (user.role === "user") {
       return res.redirect("/dashboard");
-    } else {
+    }
+    else if (user.role === "ticketer") {
+      return res.redirect("/ticketer");
+    }
+    else if (user.role === "monitor") {
+      return res.redirect("/monitor");
+    }
+    else {
       return res.send("Unknown user role.");
     }
 
@@ -218,7 +225,19 @@ app.get("/dashboard", (req, res) => {
     // if (!req.session.user) return res.redirect("/login.html");
     res.sendFile(path.join(__dirname, "index2.html"));
     // res.render("dashboard", { user: req.session.user });
-  });
+});
+  
+app.get("/ticketer", (req, res) => {
+  // if (!req.session.user) return res.redirect("/login.html");
+  res.sendFile(path.join(__dirname, "ticketer.html"));
+  // res.render("dashboard", { user: req.session.user });
+});
+
+app.get("/monitor", (req, res) => {
+  // if (!req.session.user) return res.redirect("/login.html");
+  res.sendFile(path.join(__dirname, "monitor.html"));
+  // res.render("dashboard", { user: req.session.user });
+});
 
 // (Optional) Redirect root URL to login
 app.get('/', (req, res) => {
