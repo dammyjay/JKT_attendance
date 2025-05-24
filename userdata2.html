@@ -147,6 +147,10 @@
         <!-- <button id="device-stat" class="btn-export" onclick="connectToESP32()">Connect Device</button> -->
         <button id="connect" class="btn-export">Connect Device</button>
       </div>
+      <div id="summary">
+        <p><strong>Average EMG:</strong> <span id="avgValue"></span></p>
+        <p><strong>Highest EMG:</strong> <span id="maxValue"></span></p>
+      </div>
     </div>
 
     <div class="container">
@@ -159,26 +163,6 @@
       ></textarea>
       <input type="text" id="message" placeholder="Type a message..." />
       <button id="send">Send</button>
-    </div>
-    <div style="margin-top: 20px;">
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate">
-        <br><br>
-        <label for="endDate">Start Time:</label>
-        <input type="time" id="startTime">
-        <br><br> <!-- This adds spacing and line break -->
-    
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate">
-        <br><br>
-        <label for="endDate">End Time:</label>
-        <input type="time" id="endTime">
-        <br><br> <!-- This adds spacing and line break -->
-        <div class="btn-below">
-            <button class="btn btn-light-green" onclick="applyDateFilter()">Filter</button>
-            <button class="btn btn-dark-green" onclick="resetFilter()">Reset</button>
-        </div>
-        
     </div>
 
     <button onclick="downloadCSV()">📄 Export Data</button>
@@ -208,19 +192,6 @@
     </table>
 
     <script>
-      flatpickr("#startTime", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i", // 24-hour format
-        time_24hr: true,
-      });
-
-      flatpickr("#endTime", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true,
-      });
       let userEmail = null;
 
       fetch("/getProfile")
@@ -235,29 +206,6 @@
           pollLiveData();
         })
         .catch(() => alert("Failed to load user email"));
-
-        function updateTable(data) {
-            const tableBody = document.getElementById("dataTable");
-            tableBody.innerHTML = "";
-
-            if (data.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='4'>No data available</td></tr>";
-                return;
-            }
-
-            data.forEach(row => {
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td>${row.id}</td>
-                    <td>${row.temperature}</td>
-                    <td>${row.date}</td>
-                    <td>${row.time}</td>
-                `;
-                tableBody.appendChild(tr);
-            });
-        }
-
-        
 
       function loadUserData() {
         fetch(`/getUserDeviceData?email=${encodeURIComponent(userEmail)}`)
@@ -565,65 +513,6 @@
         const fileName = `${userName}_Calicare_EMG_Readings_${timestamp}.pdf`;
         doc.save(fileName);
       }
-
-      //   function applyFilters() {
-      //     const startDate = document.getElementById("startDate").value;
-      //     const endDate = document.getElementById("endDate").value;
-      //     const deviceId = document
-      //       .getElementById("deviceFilter")
-      //       .value.toLowerCase();
-
-      //     const filtered = fullData.filter((entry) => {
-      //       const entryDate = entry.date.slice(0, 10); // Format: YYYY-MM-DD
-      //       const isDateInRange =
-      //         (!startDate || entryDate >= startDate) &&
-      //         (!endDate || entryDate <= endDate);
-
-      //       const isDeviceMatch =
-      //         !deviceId || entry.device_id.toLowerCase().includes(deviceId);
-
-      //       return isDateInRange && isDeviceMatch;
-      //     });
-
-      //     renderTable(filtered);
-      //   }
-
-      //   function resetFilters() {
-      //     document.getElementById("startDate").value = "";
-      //     document.getElementById("endDate").value = "";
-      //     document.getElementById("deviceFilter").value = "";
-      //     renderTable(fullData);
-      //   }
-
-      function applyDateFilter() {
-        const start = document.getElementById("startDate").value;
-        const startTime =
-          document.getElementById("startTime").value || "00:00:00";
-        const end = document.getElementById("endDate").value;
-        const endTime = document.getElementById("endTime").value || "23:59:59";
-
-        if (!start || !end) {
-          alert("Please select both start and end dates .");
-          return;
-        }
-
-        // fetch(`/getDataByDate?start=${start}&end=${end}`)
-        fetch(
-          `/getDataByDate?start=${start} ${startTime}&end=${end} ${endTime}`
-        )
-          .then((response) => response.json())
-          .then((data) => {
-            updateTable(data);
-            updateGraph(data);
-          })
-          .catch((error) => console.error("Error filtering data:", error));
-      }
-
-      function resetFilter() {
-        document.getElementById("startDate").value = "";
-        document.getElementById("endDate").value = "";
-        fetchData(); // Load all data again
-      }
     </script>
 
     <script>
@@ -774,6 +663,34 @@
                 `;
         tableBody.prepend(row); // add to top
       }
+    </script>
+
+    <script>
+      function calculateStats() {
+        const table = document.getElementById("dataTable");
+        const rows = table.querySelectorAll("tbody tr");
+
+        let total = 0;
+        let max = 0;
+        let count = 0;
+
+        rows.forEach((row) => {
+          const value = parseFloat(row.cells[1].textContent); // Column index 1 for EMG
+          if (!isNaN(value)) {
+            total += value;
+            if (value > max) max = value;
+            count++;
+          }
+        });
+
+        const avg = count > 0 ? (total / count).toFixed(2) : 0;
+
+        document.getElementById("avgValue").textContent = avg;
+        document.getElementById("maxValue").textContent = max;
+      }
+
+      // Call this after the table is rendered/populated
+      calculateStats();
     </script>
   </body>
 </html>

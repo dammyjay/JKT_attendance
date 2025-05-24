@@ -175,6 +175,8 @@ app.post("/login", async (req, res) => {
     // If no user found
     if (result.rows.length === 0) {
       return res.send("Invalid credentials");
+      // res.render('Admin/admin.html', { error: 'Invalid credentials' });
+      // res.render('login.html', { error: 'Invalid credentials' });
     }
 
     const user = result.rows[0];
