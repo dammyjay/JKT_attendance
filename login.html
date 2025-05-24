@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <title>Login</title>
-  <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon">
+  <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon">
   <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
@@ -20,7 +20,7 @@
       background-size: cover;
       background-position: 50%;
       background-repeat: no-repeat;
-      background-color: #EBFAFB;
+      background-color: #fbfbfb;
       font-family: Arial, sans-serif;
     }
     .form-container {
@@ -34,7 +34,7 @@
     }
     h2 {
       text-align: center;
-      color: #024c12;
+      color: #4c3502;
     }
     input[type="text"], input[type="password"] {
       width: 90%;
@@ -45,6 +45,18 @@
       box-shadow: 0 0px 10px rgba(0,0,0,0.2);
       
     }
+
+    input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: #bfa046;
+    /* gold */
+    background-color: #fff9e6;
+    /* light gold background */
+}
     .container{
       position: relative;
     }
@@ -62,8 +74,8 @@
 
     .toggle-password {
       position: absolute;
-      top: 50%;
-      right: 10px;
+      top: 45%;
+      right: 30px;
       transform: translateY(-50%);
       cursor: pointer;
       color: #666;
@@ -71,15 +83,16 @@
     button {
       width: 100%;
       padding: 15px;
-      background: #24D0D6;
+
+      background: #a78728;
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 5px;
       font-weight: bold;
       cursor: pointer;
     }
     button:hover {
-      background: #20b2b7;
+      background: #886621;
     }
     p {
       text-align: center;
@@ -185,10 +198,10 @@
   </style>
 </head>
 <body>
-  <img class="mask" src="Images/mask.png" alt="">
-  <img src="/Images/necktrans.png" class="background-image" alt="Background">
+  <!-- <img class="mask" src="Images/mask.png" alt=""> -->
+  <!-- <img src="/Images/necktrans.png" class="background-image" alt="Background"> -->
   <div class="form-container">
-    <img src="/Images/calicare logo.png" alt="Logo" class="logo">
+    <img src="/Images/JKT logo.png" alt="Logo" class="logo">
     <div class="log-details">
       <h2>Welcome Back!</h2>
       <p>PLEASE ENTER YOUR DETAILS</p>
@@ -240,7 +253,7 @@
 
       
     </form>
-    <p>Don't have an account? <a href="/signup">Sign up</a></p>
+    <!-- <p>Don't have an account? <a href="/signup">Sign up</a></p> -->
 
     <script>
       const passwordInput = document.getElementById("password");

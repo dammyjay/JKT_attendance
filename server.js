@@ -133,25 +133,6 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });
 
-// app.post("/login", async (req, res) => {
-//     const { email, password } = req.body;
-//     const result = await pool.query("SELECT * FROM users WHERE email = $1 AND password = $2", [email, password]);
-  
-//     if (email === "admin@calicare.com" && password === "Admin123") {
-//       req.session.user = {
-//         email,
-//         role: "admin",
-//       };
-//       return res.redirect("admin.html");
-//   }
-
-//     if (result.rows.length === 0) return res.send("Invalid credentials");
-  
-//     req.session.user = result.rows[0];
-//     // req.session.user = { id: user.id, username: user.username }; // Must set this
-
-//     res.redirect("/dashboard");
-//   });
 
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -209,7 +190,7 @@ app.post("/login", async (req, res) => {
 // Route for signup page
 
 app.get('/signup', (req, res) => {
-    res.sendFile(path.join(__dirname, 'signup.html'));
+    res.sendFile(path.join(__dirname, 'signup2.html'));
 });
 
 app.get('/welcome', (req, res) => {
@@ -266,7 +247,7 @@ app.get("/admin", (req, res) => {
 // Get all users
 app.get('/admin/users', isAdmin, async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, username, email, role, gender, profile_picture FROM users');
+    const result = await pool.query('SELECT id, username, email, role, gender, profile_picture, tag FROM users');
     res.json(result.rows);
   } catch (err) {
     res.status(500).send('Server error');
@@ -286,12 +267,12 @@ app.delete('/admin/users/:id', isAdmin, async (req, res) => {
 // Update user details (role, name, email)
 app.put("/admin/users/:id", isAdmin, async (req, res) => {
   const userId = req.params.id;
-  const { username, email, role } = req.body;
+  const { username, email, role, tag } = req.body;
 
   try {
     await pool.query(
-      "UPDATE users SET username = $1, email = $2, role = $3 WHERE id = $4",
-      [username, email, role, userId]
+      "UPDATE users SET username = $1, email = $2, role = $3, tag = $4 WHERE id = $5",
+      [username, email, role, tag, userId]
       // "UPDATE users SET role = $3 WHERE id = $1", 
       // [username, email, role, userId]
     );
@@ -317,7 +298,15 @@ app.get("/getUserData", async (req, res) => {
     const userId = req.session.user.id;
     const data = await pool.query("SELECT * FROM nodemcu_data WHERE user_id = $1 AND device_ip = $2", [userId, device_ip]);
     res.json(data.rows);
-  });
+});
+
+//------getting tag details--------------------------
+app.get('/tag-details', async (req, res) => {
+  const { tag } = req.query;
+  const tagResult = await pool.query("SELECT * FROM users WHERE tag = $1", [tag]);
+  if (tagResult.rows.length === 0) return res.send("No account with that email found.");
+  res.json(tagResult);
+});
 
   // app.get("/getProfile", async (req, res) => {
   //   if (!req.session.user) return res.status(401).send("Not logged in");
@@ -363,7 +352,7 @@ app.get("/getUserData", async (req, res) => {
   
   app.post("/signup", upload.single("profile_picture"), async (req, res) => {
     
-    const { email, username, phone, gender, password } = req.body;
+    const { email, username, phone, gender, password, tag, role } = req.body;
     console.log("📸 Uploaded File:", req.file); // <- log this
     // this code below that will store the file in the uploads folder to the database
     // const profile_picture = req.file ? req.file.filename : null;
@@ -371,14 +360,15 @@ app.get("/getUserData", async (req, res) => {
     //this code below that will store the file in the cloudinary to the database
     const profile_picture = req.file ? req.file.path : null;
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const role = "user"; // Default role for new users
+    // const role = "user"; // Default role for new users
+    const created_at = Date.now();
     console.log("📷 Filename to save in DB:", profile_picture);
     
     await pool.query(`
-      INSERT INTO pending_users (email, username, phone, gender, password, otp, profile_picture, role)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      INSERT INTO pending_users (email, username, phone, gender, password, otp, profile_picture, role, tag)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
       
-    `, [email, username, phone, gender, password, otp, profile_picture, role]);
+    `, [email, username, phone, gender, password, otp, profile_picture, role, tag]);
   
     await transporter.sendMail({
       to: email,
@@ -396,13 +386,14 @@ app.post("/verify-otp", async (req, res) => {
   
     if (result.rows.length === 0) return res.send("Invalid OTP");
   
-    const user = result.rows[0];
+  const user = result.rows[0];
+  const created_at = Date.now();
     // await pool.query("INSERT INTO users (email, username, phone, gender, password, profile_picture) VALUES ($1, $2, $3, $4, $5)", 
     //   [user.email, user.username, user.phone, user.gender, user.password]);
   
     await pool.query(
-      "INSERT INTO users (email, username, phone, gender, password, profile_picture, role) VALUES ($1, $2, $3, $4, $5, $6, $7)", 
-      [user.email, user.username, user.phone, user.gender, user.password, user.profile_picture, user.role]
+      "INSERT INTO users (email, username, phone, gender, password, profile_picture, role, tag) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)", 
+      [user.email, user.username, user.phone, user.gender, user.password, user.profile_picture, user.role, user.tag]
     );    
     
     await pool.query("DELETE FROM pending_users WHERE email = $1", [email]);
@@ -461,6 +452,8 @@ app.post('/updateProfile', upload.single('profile_picture'), async (req, res) =>
   app.get('/forgot-password', (req, res) => {
     res.sendFile(path.join(__dirname, 'forgot-password.html'));
   });
+
+
   
   // Handle forgot password form
   app.post('/forgot-password', async (req, res) => {

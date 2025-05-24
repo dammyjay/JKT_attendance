@@ -1,12 +1,428 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <h1>welcome ticketer</h1>
-    
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ticketer Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        /* background-color: #f0f4f8; */
+        /* background-image: url(/Images/Background.png);
+        background-size: auto;
+        background-repeat: no-repeat; */
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
+      .header {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .header img{
+        width: 40px;
+        height: 40px;
+      }
+        .header h1 {
+          font-size: 24px;
+        }
+
+        button {
+      width: 100%;
+      padding: 7px 15px;
+      background: #a78728;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #886621;
+    }
+      .btn {
+        padding: 5px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-right: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-dark-green {
+        background-color: #006400;
+        color: white;
+      }
+
+      .btn-dark-green:hover {
+        background-color: #004d00;
+      }
+
+      .btn-light-green {
+        background-color: #90ee90;
+        color: #004d00;
+        border: 2px solid #004d00;
+      }
+
+      .btn-light-green:hover {
+        background-color: #7dd87d;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      #chart {
+        width: 100%;
+        height: 400px;
+      }
+
+      .js-plotly-plot {
+        background-color: transparent;
+      }
+      #logo {
+        width: 120px;
+        height: auto;
+        display: block;
+        margin-bottom: 10px;
+      }
+      label {
+        padding: 5px 0px;
+      }
+      .btn-below {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+      }
+      a {
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        /* width: 100px; */
+        border-radius: 8px;
+      }
+
+      a {
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        /* width: 100px; */
+        border-radius: 8px;
+      }
+
+      a.hover {
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        /* width: 100px; */
+        border-radius: 8px;
+      }
+      .navi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .navi-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .navi-button {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        align-items: center;
+        gap: 50px;
+        /* margin: 0px 50px; */
+      }
+      .navigate {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        color: #004d00;
+        border: 2px solid #004d00;
+        padding: 5px 10px;
+        border-radius: 10px;
+      }
+
+      .navigate img {
+        width: 20px;
+        height: 20px;
+      }
+      .navigate a {
+        color: #000000;
+        padding: 5px 10px;
+        cursor: pointer;
+      }
+      @media (max-width: 600px) {
+        .navi-button {
+          display: flex;
+          justify-content: space-around;
+          width: 100%;
+          align-items: center;
+          gap: 10px;
+          /* margin: 0px 50px; */
+        }
+        .navigate a {
+          color: #000000;
+          padding: 5px 10px;
+          cursor: pointer;
+          font-size: 10px;
+        }
+        .navigate img {
+          width: 10px;
+          height: 10px;
+        }
+        .header {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .header img{
+        width: 20px;
+        height: 20px;
+      }
+        .header h1 {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img
+
+        src="/Images/calicare logo.png"
+        alt="Site Logo"
+        
+      />
+      <h1>Welcome Ticketer</h1>
+    </div>
+
+    <div class="navi">
+      <div class="navi-header">
+        <img
+          id="userPhoto"
+          style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+          "
+        />
+        <span style="font-weight: bold" id="usernameDisplay"></span>
+      </div>
+      <div class="navi-header">
+        <button onclick="window.location.href='/profile'">Profile</button>
+        <a href="/logout" style="background-color: red">Logout</a>
+      </div>
+    </div>
+
+    <div id="chart"></div>
+
+    <img id="posture" src="" alt="" />
+
+    <div class="navi-button">
+      <div class="navigate">
+        <a href="userdata.html">Start Tracking</a>
+        <img src="/Images/Posture.png" alt="" />
+      </div>
+
+      <div class="navigate">
+        <a href="Report.html">View Report</a>
+        <img src="/Images/Statistics.png" alt="" />
+      </div>
+
+      <div class="navigate">
+        <a href="Exercise2.html">Exercise</a>
+        <img src="/Images/Exercise.png" alt="" />
+      </div>
+    </div>
+
+   
+
+    <table style="visibility: hidden">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Sensor (%)</th>
+          <!--                 <th>Humidity</th> -->
+          <th>Date</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable" style="visibility: hidden">
+        <tr>
+          <td colspan="4">Loading data...</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script>
+     
+      flatpickr("#startTime", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i", // 24-hour format
+        time_24hr: true,
+      });
+
+      flatpickr("#endTime", {
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+      });
+
+      function updateTable(data) {
+        const tableBody = document.getElementById("dataTable");
+        tableBody.innerHTML = "";
+
+        if (data.length === 0) {
+          tableBody.innerHTML =
+            "<tr><td colspan='4'>No data available</td></tr>";
+          return;
+        }
+
+        // data.forEach(row => {
+        //     const tr = document.createElement("tr");
+        //     tr.innerHTML = `
+        //         <td>${row.id}</td>
+        //         <td>${row.temperature}</td>
+        //         <td>${row.date}</td>
+        //         <td>${row.time}</td>
+        //     `;
+        //     tableBody.appendChild(tr);
+        // });
+      }
+
+      function updateGraph(data) {
+        const latestData = data.slice(0, 9).reverse(); // Get the 9 most recent entries & reverse order for correct plotting
+
+        let timeArray = latestData.map((row) => `${row.date} ${row.time}`);
+        let temperatureArray = latestData.map((row) => row.temperature);
+
+        const temperature = temperatureArray[temperatureArray.length - 1];
+
+        let barColor = "red";
+        if (temperature > 80) {
+          barColor = "green";
+          document.getElementById("posture").src = "mangreen.png";
+        } else if (temperature > 50) {
+          barColor = "yellow";
+          document.getElementById("posture").src = "mangreen.png";
+        }
+        document.getElementById("posture").src = "mangred.png";
+
+        Plotly.react(
+          "chart",
+          [
+            {
+              type: "indicator",
+              mode: "gauge+number",
+              value: temperature,
+              title: { text: "Live EMG Sensor value (%)" },
+              gauge: {
+                axis: { range: [0, 100] }, // Full gauge range
+                bar: { color: barColor },
+                steps: [
+                  { range: [0, 100], color: "#e0e0e0" }, // Grey background for entire gauge
+                ],
+                // Full circle style
+                shape: "angular",
+                startangle: 0,
+                endangle: 360,
+              },
+              domain: { x: [0, 1], y: [0, 1] },
+            },
+          ],
+          {
+            title: " ",
+            margin: { t: 50, b: 0, l: 0, r: 0 },
+            // paper_bgcolor: 'rgba(0,0,0,0)',  // <-- Makes outer background transparent
+            // plot_bgcolor: 'rgba(0,0,0,0)'    // <-- Makes inner plot area transparent
+          }
+        );
+      }
+
+      function fetchData() {
+        fetch("/getAllData")
+          .then((response) => response.json())
+          .then((data) => {
+            updateTable(data);
+            updateGraph(data);
+          })
+          .catch((error) => console.error("Error fetching data:", error));
+      }
+
+      fetchData();
+
+      // fetch('https://calicareapp.onrender.com/getProfile', {
+      fetch("/getProfile", {
+        method: "GET",
+        credentials: "include", // <-- This tells the browser to send cookies
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("User not logged in");
+          return res.json();
+        })
+        .then((user) => {
+          document.getElementById("usernameDisplay").innerText = user.username;
+          if (user.profile_picture) {
+            // document.getElementById('userPhoto').src = '/uploads/' + user.profile_picture;
+            document.getElementById("userPhoto").src = user.profile_picture;
+          }
+        })
+        .catch((err) => {
+          console.error("Profile fetch error:", err);
+        });
+
+      // WebSocket Setup
+      const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+      const socket = new WebSocket(`${protocol}://${window.location.host}`);
+
+      socket.onmessage = function () {
+        fetchData();
+      };
+
+      socket.onopen = () => console.log("Connected to WebSocket");
+      socket.onclose = () => console.log("Disconnected from WebSocket");
+      socket.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+        setInterval(fetchData, 5000); // Poll every 5 seconds if WebSocket fails
+      };
+    </script>
+  </body>
 </html>

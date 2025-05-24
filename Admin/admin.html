@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calicare Admin Dashboard</title>
+  <title>AttendIQ Admin Dashboard</title>
   <link rel="stylesheet" href="/main.css" />
   <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
   <style>
@@ -19,12 +19,12 @@
       object-fit: cover;
       border-radius: 50%;
       margin-bottom: 15px;
-      border: 3px solid #28a745;
+      border: 3px solid #a78528;
     }
 
     .sidebar {
       width: fit-content;
-      background: #A2F9FC;
+      background: #fce7a2;
       color: rgb(0, 0, 0);
       height: 100vh;
       position: fixed;
@@ -202,6 +202,7 @@
             <th>Email</th>
             <th>Role</th>
             <th>Gender</th>
+            <th>Tag</th>
             <th>Edit</th>
             <th>Actions</th>
           </tr>
@@ -233,6 +234,7 @@
             <td>${user.email}</td>
             <td>${user.role}</td>
             <td>${user.gender}</td>
+            <td>${user.tag}</td>
             <td><button onclick="editUser(${user.id})">Edit Role</button></td>
             <td><button onclick="deleteUser(${user.id})">Delete</button></td>
           </tr>
@@ -250,11 +252,12 @@
       const name = prompt("Enter new username:");
       const email = prompt("Enter new email:");
       const role = prompt("Enter new role (user/admin):");
-      if (!name || !email || !role) return alert("All fields are required.");
+      const tag = prompt("Enter new tagID:");
+      if (!name || !email || !role || tag) return alert("All fields are required.");
       await fetch('/admin/users/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: name, email, role })
+        body: JSON.stringify({ username: name, email, role, tag })
       });
       loadUsers();
     }

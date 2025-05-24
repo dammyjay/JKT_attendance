@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+    <title>Signup</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+    <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* height: 150vh; */
+        /* background-image: url(Background.png); */
+        background-size: cover;
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-color: #ffffff;
+        font-family: Arial, sans-serif;
+      }
+      .form-container {
+        /* background: #adecd3; */
+        /* background-color: rgba(130, 236, 236, 0.3); ; */
+        padding: 30px 40px;
+        /* border-radius: 8px; */
+        /* box-shadow: 0 2px 10px rgba(0,0,0,0.1); */
+        width: 300px;
+        align-items: center;
+        justify-content: center;
+      }
+      h2 {
+        text-align: center;
+        color: #4c3502;
+      }
+      input[type="text"],
+      input[type="password"],
+      input[type="email"],
+      input[type="number"] {
+        /* width: 100%;
+      padding: 10px;
+      margin: 10px 0 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px; */
+
+        width: 100%;
+        padding: 15px 10px;
+        margin: 10px 0 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 0px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    outline: none;
+    border-color: #bfa046;
+    /* gold */
+    background-color: #fff9e6;
+    /* light gold background */
+}
+
+      .gender-box {
+        width: 100%;
+        padding: 15px 10px;
+        /* padding-left: 0px; */
+        margin: 10px 0 20px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0px 10px rgba(0, 0, 0, 0.2);
+      }
+      .container {
+        position: relative;
+        width: 100%;
+        padding-right: 10px;
+      }
+      .icon {
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        transform: translateY(-50%);
+        color: #000000;
+      }
+
+      .password-container {
+        position: relative;
+      }
+      .toggle-password {
+        position: absolute;
+        top: 50%;
+        right: 30px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #666;
+      }
+      button {
+      width: 100%;
+      padding: 15px;
+
+      background: #a78728;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #886621;
+    }
+      p {
+        text-align: center;
+        margin-top: 15px;
+      }
+      a {
+        color: #1270b0;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .logo {
+        display: block;
+        margin: 0 auto 20px;
+        max-width: 40px;
+      }
+      /* Preview Image */
+      .preview-container {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        margin-top: 15px;
+      }
+      .preview-container img {
+        max-width: 100%;
+        max-height: 150px;
+        border-radius: 8px;
+        margin-top: 10px;
+      }
+      label {
+        padding: 10px;
+        font-size: 10px;
+        color: #000000;
+        text-align: center;
+        font-weight: bold;
+      }
+      .mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100px;
+        height: 150px;
+      }
+
+      .log-details {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+      .log-details h2 {
+        color: #534229;
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+      .log-details p {
+        color: #000000;
+        font-size: 11px;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      .background-image {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: -1; /* Puts it behind everything */
+        width: 50vw; /* Or set specific width/height */
+        height: 50vh;
+        object-fit: cover;
+        opacity: 1; /* Optional: Make it faint */
+      }
+      /* label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+} */
+      .checkbox-label {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5px;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      .checkbox-label input {
+        margin-right: 10px;
+      }
+      .checkbox-label span {
+        font-size: 14px;
+        color: #555;
+      }
+      @media (max-width: 600px) {
+        .form-container {
+          width: 90%;
+          padding: 20px;
+        }
+        .background-image {
+          width: 50vw; /* Full width on small screens */
+          height: auto; /* Maintain aspect ratio */
+        }
+      }
+
+      .terms {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        /* margin-top: 10px; */
+      }
+      .terms label {
+        font-size: 12px;
+        color: #000000;
+        text-align: center;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- <img class="mask" src="/Images/mask.png" alt="" /> -->
+    <!-- <img
+      src="/Images/necktrans.png"
+      class="background-image"
+      alt="Background"
+    /> -->
+    <!-- <button id="connect" class="btn-export">Connect Device</button> -->
+    
+    <div class="form-container">
+
+      <img src="/Images/JKT logo.png" alt="Logo" class="logo" />
+      <div class="log-details">
+        <h2>Welcome Onboard!</h2>
+        <p>PLEASE ENTER YOUR DETAILS</p>
+      </div>
+      <button id="connect">Connect Bluetooth</button>
+      <p id="device-stat" style="color: red;">Not connected</p>
+  
+      <form
+        id="signup-form"
+        action="/signup"
+        method="post"
+        enctype="multipart/form-data"
+      >
+       
+        <div class="container">
+          <input id="rfid" type="text" name="tag" placeholder="your will display here when scan" required />
+          <span class="toggle-password">
+            <i class="fa fa-search"></i>
+          </span>
+        </div>
+
+        <!-- <input type="email" name="email" required placeholder="Email" /> -->
+        <div class="container">
+            <input type="text" name="email" placeholder="Email" required />
+            <span class="toggle-password">
+              <i class="fa fa-envelope"></i>
+            </span>
+          </div>
+        
+
+        <!-- <input type="text" name="username" required placeholder="Username" />
+        -->
+        <div class="container">
+          <input type="text" name="username" placeholder="Full name" required />
+          <span class="toggle-password">
+            <i class="fa fa-user"></i>
+          </span>
+        </div>
+
+        <!-- <input type="number" name="phone" required placeholder="Phone" /> -->
+        <div class="container">
+          <input type="number" name="phone" placeholder="Phone" required />
+          <span class="toggle-password">
+            <i class="fa fa-phone"></i>
+          </span>
+        </div>
+        <div class="gender-box">
+          <label style="font-size: 13px; color: grey; padding-left: 0px" for=""
+            >Gender</label
+          >
+          <select name="gender" required>
+            <option>Male</option>
+            <option>Female</option>
+            <option>Not Specified</option>
+          </select>
+        </div>
+
+        <div class="gender-box">
+            <label style="font-size: 13px; color: grey; padding-left: 0px" for=""
+              >Role</label
+            >
+            <select name="role" required>
+              <option>ticketer</option>
+              <option>monitor</option>
+            </select>
+          </div>
+
+        <div class="password-container">
+          <input
+            id="password"
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <span id="togglePassword" class="toggle-password">
+            <i class="fa fa-eye"></i>
+          </span>
+        </div>
+
+        <!-- File input for image upload -->
+        <label style="font-size: 12px" for="profile-pic"
+          >Upload Profile Picture:</label
+        >
+        <input
+          type="file"
+          id="file-input"
+          name="profile_picture"
+          accept="image/*"
+          required
+        />
+
+        <!-- Preview image container -->
+        <div class="preview-container" id="preview-container">
+          <img id="preview-image" alt="Image Preview" />
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" name="remember" />
+          Remember me
+        </label>
+        <div class="terms">
+          <label class="checkbox-label">
+            <input type="checkbox" name="remember" />
+            I agree to the
+            <a href="terms.html" style="color: #1270b0">Terms and Conditions</a>
+          </label>
+        </div>
+        <button type="submit">Sign Up</button>
+      </form>
+      <p>Already have an account? <a href="/login">Login</a></p>
+
+      <!-- OTP Modal -->
+      <div id="otp-modal" style="display: none">
+        <div
+          style="
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+          "
+        >
+          <p style="color: #218838">
+            Please check your email for verification OTP sent and enter it
+            below.
+          </p>
+          <p style="color: #e73f07">
+            you can also check your spam folder if you don't see it in your
+            inbox.
+          </p>
+          <input id="otp-input" placeholder="Enter OTP" />
+          <button onclick="verifyOtp()">Verify OTP</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let device;
+      let characteristic;
+
+      const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+      const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+      document.getElementById("connect").addEventListener("click", async () => {
+        try {
+          device = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "ESP32" }],
+            optionalServices: [SERVICE_UUID],
+          });
+
+          const server = await device.gatt.connect();
+          const service = await server.getPrimaryService(SERVICE_UUID);
+          characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+          device.addEventListener("gattserverdisconnected", () => {
+            document.getElementById("neckguard-stat").textContent =
+              "Disconnected";
+            // document.getElementById("container").style.display = "none"; // hide UI
+            log("Device disconnected.");
+          });
+
+          
+          readFromESP32();
+        } catch (error) {
+          log("Error: " + error);
+        }
+      });
+
+      document.getElementById("send").addEventListener("click", async () => {
+        const msg = document.getElementById("message").value;
+        if (!msg || !characteristic) return;
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(msg));
+        log(`Sent to NeckGuard: ${msg}`);
+        document.getElementById("message").value = "";
+      });
+
+      function log(text) {
+        // Update connection status if it's a successful connection
+        if (text.includes("Connected to")) {
+          document.getElementById("neckguard-stat").textContent = text;
+        }
+      }
+
+      async function readFromESP32() {
+        try {
+          await characteristic.startNotifications(); // 👈 Subscribe to notifications
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            async (event) => {
+              const decoder = new TextDecoder();
+              const value = event.target.value;
+              const received = decoder.decode(value).trim(); // Example: "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+
+              log(`NeckGuard says: ${received}`);
+
+              const [email, temp, hum, deviceId] = received
+                .split(",")
+                .map((s) => s.trim());
+
+              // Optional UI update:
+              document.getElementById("rfid").value = temp;
+              // document.getElementById("device-stat").textContent = deviceId;
+              document.getElementById("device-stat").textContent = "connected";
+              document.getElementById("device-stat").style.color = "green";
+
+            }
+          );
+
+          log("Subscribed to NeckGuard notifications.");
+        } catch (err) {
+          log("Notification error: " + err);
+
+          await loadUserData(); // ✅ refresh table with new reading
+        }
+      }
+
+      
+    </script>
+
+
+  </body>
+</html>
