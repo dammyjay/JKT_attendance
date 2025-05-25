@@ -275,8 +275,8 @@
       <div id="neckguard-stat" style="margin-bottom: 10px; color: red">
         Not Connected
       </div>
-      <button style="width: auto; padding: 5px 10px; background-color: black;" id="connect" type="button">Scan Card</button>
-      <div id="scanned-info" style="margin: 10px 0"></div>
+      <button style="width: auto; padding: 5px 10px; background-color: black;" id="connect" type="button">Connect to Scan Card</button><br><br>
+      
       <form id="take-attendance-form">
         <select
           name="course_code"
@@ -293,15 +293,16 @@
         >
           <option value="">Select Course</option>
         </select>
+        <div id="scanned-info" style="margin: 10px 0"></div>
         <input
-          type="text"
+          type="hidden"
           name="student_tag"
           id="rfid"
           required
           placeholder="your rfid will show here"
           readonly
         />
-        <input type="text" name="student_email" id="student_email" placeholder="your email will show here after scan" required readonly/>
+        <input type="hidden" name="student_email" id="student_email" placeholder="your email will show here after scan" required readonly/>
         <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
         
         <button type="submit">Mark Present</button>
@@ -814,14 +815,14 @@
               const infoDiv = document.getElementById("scanned-info");
               if (student) {
                 infoDiv.innerHTML = `
-            <b>Student Found:</b><br>
+            <b>Student Found:</b><br><br>
             <img src="${
               student.profile_picture || ""
-            }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
-            Name: ${student.fullname}<br>
-            Email: ${student.email}<br>
-            Matric: ${student.matric}<br>
-            Tag: ${student.tag}
+            }" style="width:60px;height:60px;border-radius:50%;object-fit:cover;"><br>
+            <b>Name:</b> ${student.fullname}<br><br>
+            <b>Email:</b> ${student.email}<br><br>
+            <b>Matric:</b> ${student.matric}<br><br>
+            <b>Tag:</b> ${student.tag}
           `;
                 document.getElementById("student_email").value = student.email;
                 document.getElementById("rfid").value = student.tag;
