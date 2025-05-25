@@ -272,7 +272,9 @@
     <!-- In your Take Attendance section -->
     <div id="attendance" class="section">
       <h2>Take Attendance</h2>
-      <!-- <button id="scan-btn" type="button">Scan Card</button> -->
+      <div id="neckguard-stat" style="margin-bottom: 10px; color: red">
+        Not Connected
+      </div>
       <button id="connect" type="button">Scan Card</button>
       <div id="scanned-info" style="margin: 10px 0"></div>
       <form id="take-attendance-form">
@@ -304,6 +306,7 @@
         <button type="submit">Mark Present</button>
       </form>
       <div class="result" id="attendance-result"></div>
+      <div id="live-attendance-table"></div>
     </div>
 
     <div id="view" class="section">
@@ -347,6 +350,20 @@
         >
           <option value="">Select Course</option>
         </select>
+        <input
+          type="date"
+          name="date"
+          id="attendance-date"
+          required
+          style="
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+          "
+        />
         <button type="submit">View Attendance</button>
       </form>
       <div id="attendance-table"></div>
@@ -415,7 +432,7 @@
         e.target.reset();
       };
 
-      // Take Attendance
+
       document.getElementById("take-attendance-form").onsubmit = async (e) => {
         e.preventDefault();
         const course_code = e.target.course_code.value;
@@ -428,8 +445,15 @@
         });
         document.getElementById("attendance-result").innerText =
           await res.text();
-        e.target.reset();
+        // e.target.reset();
+        // document.getElementById("scanned-info").innerHTML = "";
+        // document.getElementById("rfid").value = "";
+        // await updateLiveAttendanceTable(); // Update the table after marking attendance
+
+        document.getElementById("student_email").value = "";
+        document.getElementById("rfid").value = "";
         document.getElementById("scanned-info").innerHTML = "";
+        await updateLiveAttendanceTable();
       };
 
       // View Attendance
@@ -438,10 +462,11 @@
         e.preventDefault();
         // const course_code = e.target.course_code.value;
         const course_code = document.getElementById("view-course-select").value;
+        const date = document.getElementById("attendance-date").value;
         const res = await fetch("/getAttendance", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ course_code }),
+          body: JSON.stringify({ course_code, date }),
         });
         const data = await res.json();
         let html = `<table>
@@ -480,6 +505,19 @@
       // Populate student and course dropdowns on page load
       window.addEventListener("DOMContentLoaded", async () => {
         // ...existing code...
+
+        // Populate Assign Student student dropdown
+        const studentSelect = document.getElementById("student-select");
+        if (studentSelect) {
+          const studentRes = await fetch("/api/students");
+          const students = await studentRes.json();
+          students.forEach((s) => {
+            const opt = document.createElement("option");
+            opt.value = s.email;
+            opt.textContent = `${s.fullname} (${s.email})`;
+            studentSelect.appendChild(opt);
+          });
+        }
 
         // Populate Assign Student course dropdown
         const assignCourseSelect = document.getElementById(
@@ -570,6 +608,54 @@
         document.body.innerHTML = originalContents;
         window.location.reload(); // reload to restore event listeners
       };
+
+      async function updateLiveAttendanceTable() {
+        const course_code = document.getElementById(
+          "attendance-course-select"
+        ).value;
+        if (!course_code) {
+          document.getElementById("live-attendance-table").innerHTML = "";
+          return;
+        }
+        const today = new Date().toISOString().split("T")[0];
+        const res = await fetch("/getAttendance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ course_code, date: today }),
+        });
+        const data = await res.json();
+        let html = `<table>
+    <tr>
+      <th>Profile</th>
+      <th>Full Name</th>
+      <th>Matric</th>
+      <th>Email</th>
+      <th>Tag</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Status</th>
+    </tr>`;
+        data.forEach((row) => {
+          html += `<tr>
+      <td><img src="${
+        row.profile_picture || ""
+      }" alt="Profile" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
+      <td>${row.fullname}</td>
+      <td>${row.matric}</td>
+      <td>${row.student_email}</td>
+      <td>${row.tag}</td>
+      <td>${row.date}</td>
+      <td>${
+        row.clock_in_time
+          ? new Date(row.clock_in_time).toLocaleTimeString()
+          : ""
+      }</td>
+      <td>${row.status}</td>
+    </tr>`;
+        });
+        html += "</table>";
+        document.getElementById("live-attendance-table").innerHTML = html;
+      }
     </script>
 
     <script>
@@ -589,6 +675,9 @@
           const server = await device.gatt.connect();
           const service = await server.getPrimaryService(SERVICE_UUID);
           characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+          document.getElementById("neckguard-stat").textContent = "Connected";
+          document.getElementById("neckguard-stat").style.color = "green";
 
           device.addEventListener("gattserverdisconnected", () => {
             document.getElementById("neckguard-stat").textContent =
@@ -652,6 +741,59 @@
       // }
       // ...existing code...
 
+      // async function readFromESP32() {
+      //   try {
+      //     await characteristic.startNotifications();
+      //     characteristic.addEventListener(
+      //       "characteristicvaluechanged",
+      //       async (event) => {
+      //         const decoder = new TextDecoder();
+      //         const value = event.target.value;
+      //         const received = decoder.decode(value).trim(); // e.g. "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+
+      //         log(`NeckGuard says: ${received}`);
+
+      //         // Assume the tag is the 4th value (deviceId)
+      //         const [email, temp, hum, tag] = received
+      //           .split(",")
+      //           .map((s) => s.trim());
+
+      //         // Lookup student by tag
+      //         const res = await fetch(`/api/students`);
+      //         const students = await res.json();
+      //         const student = students.find((s) => s.tag === temp);
+
+      //         const infoDiv = document.getElementById("scanned-info");
+      //         if (student) {
+      //           infoDiv.innerHTML = `
+      //       <b>Student Found:</b><br>
+      //       <img src="${
+      //         student.profile_picture || ""
+      //       }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
+      //       Name: ${student.fullname}<br>
+      //       Email: ${student.email}<br>
+      //       Matric: ${student.matric}<br>
+      //       Tag: ${student.tag}
+      //     `;
+      //           document.getElementById("student_email").value = student.email;
+      //           document.getElementById("rfid").value = student.tag;
+      //         } else {
+      //           infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${tag}</span>`;
+      //           document.getElementById("student_email").value = "";
+      //           document.getElementById("rfid").value = tag;
+      //         }
+
+      //         // Optional: auto-submit attendance form if student found
+      //         // if (student) document.getElementById("take-attendance-form").requestSubmit();
+      //       }
+      //     );
+
+      //     log("Subscribed to NeckGuard notifications.");
+      //   } catch (err) {
+      //     log("Notification error: " + err);
+      //   }
+      // }
+
       async function readFromESP32() {
         try {
           await characteristic.startNotifications();
@@ -660,7 +802,7 @@
             async (event) => {
               const decoder = new TextDecoder();
               const value = event.target.value;
-              const received = decoder.decode(value).trim(); // e.g. "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+              const received = decoder.decode(value).trim();
 
               log(`NeckGuard says: ${received}`);
 
@@ -688,14 +830,14 @@
           `;
                 document.getElementById("student_email").value = student.email;
                 document.getElementById("rfid").value = student.tag;
+
+                // Automatically submit the attendance form
+                document.getElementById("take-attendance-form").requestSubmit();
               } else {
                 infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${tag}</span>`;
                 document.getElementById("student_email").value = "";
                 document.getElementById("rfid").value = tag;
               }
-
-              // Optional: auto-submit attendance form if student found
-              // if (student) document.getElementById("take-attendance-form").requestSubmit();
             }
           );
 

@@ -1200,11 +1200,37 @@ app.post("/takeAttendance", async (req, res) => {
 });
 
 // VIEW ATTENDANCE
+// app.post("/getAttendance", async (req, res) => {
+//   const { course_code, duplicate } = req.body;
+//   try {
+//     const result = await pool.query(
+//       `SELECT
+//         a.student_email,
+//         s.fullname,
+//         s.matric,
+//         s.tag,
+//         s.profile_picture,
+//         a.date,
+//         a.status,
+//         a.clock_in_time
+//       FROM attendance a
+//       JOIN students s ON a.student_email = s.email
+//       WHERE a.course_code = $1
+//       ORDER BY a.date DESC, a.clock_in_time DESC`,
+//       [course_code]
+//     );
+//     res.json(result.rows);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error fetching attendance.");
+//   }
+// });
+
 app.post("/getAttendance", async (req, res) => {
-  const { course_code } = req.body;
+  const { course_code, date } = req.body;
   try {
-    const result = await pool.query(
-      `SELECT 
+    let query = `
+      SELECT 
         a.student_email, 
         s.fullname, 
         s.matric, 
@@ -1216,9 +1242,17 @@ app.post("/getAttendance", async (req, res) => {
       FROM attendance a
       JOIN students s ON a.student_email = s.email
       WHERE a.course_code = $1
-      ORDER BY a.date DESC, a.clock_in_time DESC`,
-      [course_code]
-    );
+    `;
+    const params = [course_code];
+
+    if (date) {
+      query += " AND a.date = $2";
+      params.push(date);
+    }
+
+    query += " ORDER BY a.date DESC, a.clock_in_time DESC";
+
+    const result = await pool.query(query, params);
     res.json(result.rows);
   } catch (err) {
     console.error(err);
