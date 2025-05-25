@@ -275,19 +275,9 @@
       <div id="neckguard-stat" style="margin-bottom: 10px; color: red">
         Not Connected
       </div>
-      <button id="connect" type="button">Scan Card</button>
+      <button style="width: auto; padding: 5px 10px; background-color: black;" id="connect" type="button">Scan Card</button>
       <div id="scanned-info" style="margin: 10px 0"></div>
       <form id="take-attendance-form">
-        <input
-          type="text"
-          name="student_tag"
-          id="rfid"
-          required
-          placeholder="your rfid will show here"
-          readonly
-        />
-        <input type="hidden" name="student_email" id="student_email" required />
-        <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
         <select
           name="course_code"
           id="attendance-course-select"
@@ -303,6 +293,17 @@
         >
           <option value="">Select Course</option>
         </select>
+        <input
+          type="text"
+          name="student_tag"
+          id="rfid"
+          required
+          placeholder="your rfid will show here"
+          readonly
+        />
+        <input type="text" name="student_email" id="student_email" placeholder="your email will show here after scan" required readonly/>
+        <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
+        
         <button type="submit">Mark Present</button>
       </form>
       <div class="result" id="attendance-result"></div>
@@ -457,6 +458,7 @@
 
       // View Attendance
       // teacher.html
+
       document.getElementById("view-attendance-form").onsubmit = async (e) => {
         e.preventDefault();
         // const course_code = e.target.course_code.value;
@@ -667,12 +669,14 @@
           const service = await server.getPrimaryService(SERVICE_UUID);
           characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
-          document.getElementById("neckguard-stat").textContent = "Connected";
+          document.getElementById("neckguard-stat").textContent =
+            "Connected to " + device.name;
           document.getElementById("neckguard-stat").style.color = "green";
 
           device.addEventListener("gattserverdisconnected", () => {
             document.getElementById("neckguard-stat").textContent =
               "Disconnected";
+            document.getElementById("neckguard-stat").style.color = "red";
             // document.getElementById("container").style.display = "none"; // hide UI
             log("Device disconnected.");
           });

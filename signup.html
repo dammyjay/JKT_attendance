@@ -246,7 +246,7 @@
       >
         connect bluetooth
       </button>
-      <p id="device-stat" style="color: green"></p>
+      <p id="device-stat" style="color: rgb(128, 9, 0)">Not Connected</p>
       <form
         id="signup-form"
         action="/signup"
@@ -488,8 +488,11 @@
           const service = await server.getPrimaryService(SERVICE_UUID);
           characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
 
+          document.getElementById("device-stat").textContent =
+            "Connected to " + device.name;
+
           device.addEventListener("gattserverdisconnected", () => {
-            document.getElementById("neckguard-stat").textContent =
+            document.getElementById("device-stat").textContent =
               "Disconnected";
             // document.getElementById("container").style.display = "none"; // hide UI
             log("Device disconnected.");
@@ -513,7 +516,7 @@
       function log(text) {
         // Update connection status if it's a successful connection
         if (text.includes("Connected to")) {
-          document.getElementById("neckguard-stat").textContent = text;
+          document.getElementById("device-stat").textContent = text;
         }
       }
 

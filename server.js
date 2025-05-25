@@ -1179,6 +1179,15 @@ app.post("/takeAttendance", async (req, res) => {
       return res.status(404).send("Student/tag mismatch.");
     }
 
+    // Check if student is assigned to the course
+    const assignedRes = await pool.query(
+      "SELECT * FROM course_students WHERE course_code = $1 AND student_email = $2",
+      [course_code, student_email]
+    );
+    if (assignedRes.rows.length === 0) {
+      return res.status(400).send("Student not assigned to this course.");
+    }
+
     // Check if already marked today
     const existing = await pool.query(
       "SELECT * FROM attendance WHERE course_code = $1 AND student_email = $2 AND date = $3",
@@ -1193,6 +1202,18 @@ app.post("/takeAttendance", async (req, res) => {
       [course_code, student_email, date, "Present", student_tag, clock_in_time]
     );
     res.send("Attendance marked as present.");
+
+    // After successful attendance insert:
+    const studentInfo = await pool.query(
+      "SELECT fullname, matric FROM students WHERE email = $1",
+      [student_email]
+    );
+    res.json({
+      message: "Attendance marked as present.",
+      fullname: studentInfo.rows[0].fullname,
+      matric: studentInfo.rows[0].matric,
+      clock_in_time: clock_in_time.toLocaleTimeString(),
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Error marking attendance.");
