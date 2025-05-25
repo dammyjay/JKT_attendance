@@ -19,53 +19,59 @@
         object-fit: cover;
         border-radius: 50%;
         margin-bottom: 15px;
-        border: 3px solid #28a745;
+        border: 3px solid #a78528;
       }
-
+  
       .sidebar {
         width: fit-content;
-        background: #A2F9FC;
+        background: #fce7a2;
         color: rgb(0, 0, 0);
         height: 100vh;
         position: fixed;
         padding: 20px;
         transition: transform 0.3s ease;
       }
-
+  
       .sidebar.hidden {
         transform: translateX(-100%);
       }
-
+  
       .sidebar h2 {
         color: #000000;
       }
-
+  
       .sidebar ul {
         list-style: none;
         padding: 0;
       }
-
+  
       .sidebar ul li {
         margin: 20px 0;
       }
-
+  
       .sidebar ul li a {
         color: rgb(0, 0, 0);
         text-decoration: none;
       }
-      
-      .active {
-        background-color: #05845e;
-        color: white;
-        padding: 10px 5px;
+  
+      .sidebar ul li a:hover {
+        color: #a78528;
+        text-decoration: underline;
       }
-
+      .sidebar ul li a.active {
+        color: #fff;
+        background-color: #a78528;
+        border-radius: 8px;
+        padding: 6px 12px;
+        text-decoration: none;
+      }
+  
       .main {
         margin-left: 200px;
         padding: 20px;
         flex: 1;
       }
-
+  
       .menu-toggle {
         display: none;
         position: fixed;
@@ -79,7 +85,7 @@
         z-index: 1000;
         cursor: pointer;
       }
-
+  
       table {
         width: 100%;
         border-collapse: collapse;
@@ -88,7 +94,7 @@
         display: block;
         border: none;
       }
-
+  
       th,
       td {
         /* border: 1px solid #ccc; */
@@ -96,19 +102,21 @@
         text-align: left;
         white-space: nowrap;
       }
-
+  
       th {
         background-color: #f4f4f4;
       }
-
+  
       button {
         padding: 6px 12px;
         cursor: pointer;
-        background-color: #24D0D6;
+        /* background-color: #004d00; */
+        background-color: #000000;
         color: white;
         border-radius: 10px;
+        border-color: #a78528;
       }
-
+  
       img {
         width: 50px;
         height: 50px;
@@ -119,69 +127,63 @@
         display: flex;
         flex-direction: row;
       }
-
+      .rowa {
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+      }
+  
       @media (max-width: 768px) {
         body {
           flex-direction: column;
         }
-
+  
         .sidebar {
           position: fixed;
           height: 100%;
           transform: translateX(-100%);
           z-index: 999;
         }
-
+  
         .sidebar.show {
           transform: translateX(0);
         }
-
+  
         .main {
           margin-left: 0;
           margin-top: 20px;
           padding: 10px;
         }
-
+  
         table {
           font-size: 14px;
         }
-
+  
         th,
         td {
           padding: 6px;
-          width: 50px;
         }
-
+  
         .users-table th {
           text-align: center;
         }
-
+  
         button {
           padding: 4px 8px;
           font-size: 12px;
         }
-
+  
         .menu-toggle {
           display: block;
         }
       }
-
-      input[type="text"] {
-        padding: 8px;
-        margin: 5px 0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: calc(100% - 16px);
-      }
-
-      
-
+  
       @media (max-width: 480px) {
         th,
         td {
           font-size: 12px;
         }
-
+  
         img {
           width: 40px;
           height: 40px;
@@ -195,7 +197,7 @@
 
     <div class="page">
       <div id="sidebar" class="sidebar">
-        <h2>Calicare Admin</h2>
+        <h2>AttendIQ Admin</h2>
         <ul>
           <li>
             <a href="/Admin/profile-admin.html"
@@ -208,9 +210,9 @@
           </li>
           <li><a href="/Admin/dashboard-admin.html">Dashboard</a></li>
           <li><a href="/Admin/admin.html">Users</a></li>
-          <li><a href="/Admin/device-admin.html">Devices</a></li>
-          <li class="active"><a href="/Admin/upload.html">Upload</a></li>
-          <li><a href="/Admin/setting-admin.html">Settings</a></li>
+          <li><a href="/Admin/courses.html">Courses</a></li>
+          <li><a href="/Admin/students.html">Students</a></li>
+          <li><a class="active" href="/Admin/setting-admin.html">Settings</a></li>
           <li><a href="/Admin/profile-admin.html">Profile</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>

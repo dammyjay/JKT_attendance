@@ -19,12 +19,12 @@
       object-fit: cover;
       border-radius: 50%;
       margin-bottom: 15px;
-      border: 3px solid #28a745;
+      border: 3px solid #a78528;
     }
 
     .sidebar {
       width: fit-content;
-      background: #A2F9FC;
+      background: #fce7a2;
       color: rgb(0, 0, 0);
       height: 100vh;
       position: fixed;
@@ -54,11 +54,17 @@
       text-decoration: none;
     }
 
-    .active {
-        background-color: #05845e;
-        color: white;
-        padding: 10px 5px;
-      }
+    .sidebar ul li a:hover {
+      color: #a78528;
+      text-decoration: underline;
+    }
+    .sidebar ul li a.active {
+      color: #fff;
+      background-color: #a78528;
+      border-radius: 8px;
+      padding: 6px 12px;
+      text-decoration: none;
+    }
 
     .main {
       margin-left: 200px;
@@ -66,7 +72,7 @@
       flex: 1;
     }
 
-     .menu-toggle {
+    .menu-toggle {
       display: none;
       position: fixed;
       top: 5px;
@@ -89,7 +95,8 @@
       border: none;
     }
 
-    th, td {
+    th,
+    td {
       /* border: 1px solid #ccc; */
       padding: 10px 15px;
       text-align: left;
@@ -104,9 +111,10 @@
       padding: 6px 12px;
       cursor: pointer;
       /* background-color: #004d00; */
-      background-color: #24D0D6;
+      background-color: #000000;
       color: white;
       border-radius: 10px;
+      border-color: #a78528;
     }
 
     img {
@@ -118,6 +126,11 @@
     .page {
       display: flex;
       flex-direction: row;
+    }
+    .rowa {
+      display: flex;
+      justify-content: space-between;
+      text-align: center;
     }
 
     @media (max-width: 768px) {
@@ -146,8 +159,13 @@
         font-size: 14px;
       }
 
-      th, td {
+      th,
+      td {
         padding: 6px;
+      }
+
+      .users-table th {
+        text-align: center;
       }
 
       button {
@@ -161,7 +179,8 @@
     }
 
     @media (max-width: 480px) {
-      th, td {
+      th,
+      td {
         font-size: 12px;
       }
 
@@ -179,19 +198,26 @@
   <div class="page">
     
     <div id="sidebar" class="sidebar">
-      <h2>Calicare Admin</h2>
+      <h2>AttendIQ Admin</h2>
       <ul>
-        <li><a href="/Admin/profile-admin.html"><img id="profilePic" class="profile-pic" src="default-avatar.png" alt="Profile Picture" /></a></li>
+        <li>
+          <a href="/Admin/profile-admin.html"
+            ><img
+              id="profilePic"
+              class="profile-pic"
+              src="default-avatar.png"
+              alt="Profile Picture"
+          /></a>
+        </li>
         <li><a href="/Admin/dashboard-admin.html">Dashboard</a></li>
         <li><a href="/Admin/admin.html">Users</a></li>
-        <li><a href="/Admin/device-admin.html">Devices</a></li>
-        <li><a href="/Admin/upload.html">Upload</a></li>
-        <li class="active"><a href="/Admin/setting-admin.html">Settings</a></li>
+        <li><a href="/Admin/courses.html">Courses</a></li>
+        <li><a href="/Admin/students.html">Students</a></li>
+        <li><a class="active" href="/Admin/setting-admin.html">Settings</a></li>
         <li><a href="/Admin/profile-admin.html">Profile</a></li>
         <li><a href="/logout">Logout</a></li>
       </ul>
     </div>
-
     <div class="main">
       <h1>Welcome Admin</h1> <span style="color: #28a745; font-weight: bold;" id="username"></span>
       <h2>Settings</h2>
