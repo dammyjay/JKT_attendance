@@ -146,7 +146,7 @@
 
       @media print {
         body * {
-          /* visibility: hidden; */
+          visibility: hidden;
         }
         #attendance-table,
         #attendance-table * {
@@ -213,10 +213,34 @@
     <div id="assign" class="section">
       <h2>Assign Student to Course</h2>
       <form id="assign-student-form">
-        <select name="student_email" id="student-select" required>
+        <select
+          name="student_email"
+          id="student-select"
+          required
+          style="
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+          "
+        >
           <option value="">Select Student</option></select
         ><br /><br />
-        <select name="course_code" id="course-select" required>
+        <select
+          name="course_code"
+          id="assign-course-select"
+          required
+          style="
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+          "
+        >
           <option value="">Select Course</option></select
         ><br /><br />
         <button type="submit">Assign Student</button>
@@ -262,12 +286,21 @@
         />
         <input type="hidden" name="student_email" id="student_email" required />
         <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
-        <input
-          type="text"
+        <select
           name="course_code"
-          placeholder="Course Code"
+          id="attendance-course-select"
           required
-        />
+          style="
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+          "
+        >
+          <option value="">Select Course</option>
+        </select>
         <button type="submit">Mark Present</button>
       </form>
       <div class="result" id="attendance-result"></div>
@@ -292,12 +325,28 @@
         Print Attendance
       </button>
       <form id="view-attendance-form">
-        <input
+        <!-- <input
           type="text"
           name="course_code"
           placeholder="Course Code"
           required
-        />
+        /> -->
+
+        <select
+          name="course_code"
+          id="view-course-select"
+          required
+          style="
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 15px;
+          "
+        >
+          <option value="">Select Course</option>
+        </select>
         <button type="submit">View Attendance</button>
       </form>
       <div id="attendance-table"></div>
@@ -336,19 +385,6 @@
           .querySelector(`.navbar button[onclick="showSection('${id}')"]`)
           .classList.add("active");
       }
-
-      // Create Course
-      // document.getElementById("create-course-form").onsubmit = async (e) => {
-      //   e.preventDefault();
-      //   const formData = new FormData(e.target);
-      //   const res = await fetch("/createCourse", {
-      //     method: "POST",
-      //     body: formData,
-      //   });
-      //   document.getElementById("course-create-result").innerText =
-      //     await res.text();
-      //   e.target.reset();
-      // };
 
       // teacher.html
       document.getElementById("create-course-form").onsubmit = async (e) => {
@@ -400,7 +436,8 @@
       // teacher.html
       document.getElementById("view-attendance-form").onsubmit = async (e) => {
         e.preventDefault();
-        const course_code = e.target.course_code.value;
+        // const course_code = e.target.course_code.value;
+        const course_code = document.getElementById("view-course-select").value;
         const res = await fetch("/getAttendance", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -442,27 +479,50 @@
 
       // Populate student and course dropdowns on page load
       window.addEventListener("DOMContentLoaded", async () => {
-        // Fetch students
-        const studentRes = await fetch("/api/students");
-        const students = await studentRes.json();
-        const studentSelect = document.getElementById("student-select");
-        students.forEach((s) => {
-          const opt = document.createElement("option");
-          opt.value = s.email;
-          opt.textContent = `${s.fullname} (${s.email})`;
-          studentSelect.appendChild(opt);
-        });
+        // ...existing code...
 
-        // Fetch courses
-        const courseRes = await fetch("/api/courses");
-        const courses = await courseRes.json();
-        const courseSelect = document.getElementById("course-select");
-        courses.forEach((c) => {
-          const opt = document.createElement("option");
-          opt.value = c.course_code;
-          opt.textContent = `${c.course_name} (${c.course_code})`;
-          courseSelect.appendChild(opt);
-        });
+        // Populate Assign Student course dropdown
+        const assignCourseSelect = document.getElementById(
+          "assign-course-select"
+        );
+        if (assignCourseSelect) {
+          const courseRes = await fetch("/api/courses");
+          const courses = await courseRes.json();
+          courses.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.course_code;
+            opt.textContent = `${c.course_name} (${c.course_code})`;
+            assignCourseSelect.appendChild(opt);
+          });
+        }
+
+        // Populate Take Attendance course dropdown
+        const attendanceCourseSelect = document.getElementById(
+          "attendance-course-select"
+        );
+        if (attendanceCourseSelect) {
+          const courseRes = await fetch("/api/courses");
+          const courses = await courseRes.json();
+          courses.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.course_code;
+            opt.textContent = `${c.course_name} (${c.course_code})`;
+            attendanceCourseSelect.appendChild(opt);
+          });
+        }
+
+        // Populate View Attendance course dropdown
+        const viewCourseSelect = document.getElementById("view-course-select");
+        if (viewCourseSelect) {
+          const courseRes = await fetch("/api/courses");
+          const courses = await courseRes.json();
+          courses.forEach((c) => {
+            const opt = document.createElement("option");
+            opt.value = c.course_code;
+            opt.textContent = `${c.course_name} (${c.course_code})`;
+            viewCourseSelect.appendChild(opt);
+          });
+        }
       });
 
       // Example BLE scan simulation (replace with real BLE scan logic)
