@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AttendIQ Admin Dashboard</title>
   <link rel="stylesheet" href="/main.css" />
-  <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+  <link rel="icon" href="/Images/JKT logo.png" type="image/x-icon" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -98,9 +98,10 @@
       padding: 6px 12px;
       cursor: pointer;
       /* background-color: #004d00; */
-      background-color: #24D0D6;
+      background-color: #000000;
       color: white;
       border-radius: 10px;
+      border-color: #a78528;
     }
 
     img {
@@ -192,7 +193,7 @@
 
     <div class="main">
       <h1>Welcome Admin</h1> <span style="color: #28a745; font-weight: bold;" id="username"></span>
-      <h2>Users</h2>
+      <h2>Registered Users</h2>
       <table id="users-table" class="users-table">
         <thead>
           <tr>
@@ -235,7 +236,7 @@
             <td>${user.role}</td>
             <td>${user.gender}</td>
             <td>${user.tag}</td>
-            <td><button onclick="editUser(${user.id})">Edit Role</button></td>
+            <td><button onclick="editUser(${user.id})">Edit Data</button></td>
             <td><button onclick="deleteUser(${user.id})">Delete</button></td>
           </tr>
         `;
