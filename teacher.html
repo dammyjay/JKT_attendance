@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teacher Dashboard</title>
+    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: #f8f8f8;
+      }
+      .navi {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 30px;
+      }
+      .navi-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .navbar {
+        display: flex;
+        background: #a78728;
+        border-bottom: 2px solid #886621;
+      }
+      .navbar button {
+        flex: 1;
+        padding: 16px;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .navbar button.active,
+      .navbar button:hover {
+        background: #886621;
+      }
+      button {
+        width: 100%;
+        padding: 5px 10px;
+        background: #a78728;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #886621;
+      }
+      a {
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        /* width: 100px; */
+        border-radius: 8px;
+        /* background-color: #a78728; */
+      }
+
+      a:hover {
+        padding: 5px 10px;
+        text-decoration: none;
+        color: white;
+        /* background-color: #886621; */
+        font-weight: bold;
+        cursor: pointer;
+        /* width: 100px; */
+        border-radius: 8px;
+      }
+      .section {
+        display: none;
+        padding: 30px 20px;
+        background: #fff;
+        margin: 30px auto;
+        /* max-width: 500px; */
+        width: fill;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+      }
+      .section.active {
+        display: block;
+      }
+      h2 {
+        color: #4c3502;
+        margin-top: 0;
+      }
+      form input,
+      form button {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+        padding: 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+      }
+      form button {
+        background: #a78728;
+        color: white;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      form button:hover {
+        background: #886621;
+      }
+      .result,
+      #attendance-table {
+        margin-top: 10px;
+        font-size: 15px;
+        color: #295153;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        /* border: 1px solid #ccc; */
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background: #f2f2f2;
+      }
+      @media (max-width: 600px) {
+        .section {
+          max-width: 98vw;
+          padding: 10px;
+        }
+        .navbar button {
+          font-size: 13px;
+          padding: 10px;
+        }
+      }
+
+      @media print {
+        body * {
+          /* visibility: hidden; */
+        }
+        #attendance-table,
+        #attendance-table * {
+          visibility: visible;
+        }
+        #attendance-table {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navi">
+      <div class="navi-header">
+        <img
+          id="userPhoto"
+          style="
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+          "
+        />
+        <span style="font-weight: bold" id="usernameDisplay"></span>
+      </div>
+      <div class="navi-header">
+        <!-- <a href="/profile" style="">Profile</a> -->
+        <button onclick="window.location.href='/profile'">Profile</button>
+        <a href="/logout" style="background-color: red">Logout</a>
+      </div>
+    </div>
+    <div class="navbar">
+      <button class="active" onclick="showSection('create')">
+        Create Course
+      </button>
+      <button onclick="showSection('assign')">Assign Student</button>
+      <button onclick="showSection('attendance')">Take Attendance</button>
+      <button onclick="showSection('view')">View Attendance</button>
+    </div>
+
+    <div id="create" class="section active">
+      <h2>Create New Course</h2>
+      <form id="create-course-form">
+        <input
+          type="text"
+          name="course_name"
+          placeholder="Course Name"
+          required
+        />
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">Create Course</button>
+      </form>
+      <div class="result" id="course-create-result"></div>
+    </div>
+
+    <div id="assign" class="section">
+      <h2>Assign Student to Course</h2>
+      <form id="assign-student-form">
+        <select name="student_email" id="student-select" required>
+          <option value="">Select Student</option></select
+        ><br /><br />
+        <select name="course_code" id="course-select" required>
+          <option value="">Select Course</option></select
+        ><br /><br />
+        <button type="submit">Assign Student</button>
+      </form>
+      <div class="result" id="assign-result"></div>
+    </div>
+
+    <!-- taking attendance  -->
+    <!-- <div id="attendance" class="section">
+      <h2>Take Attendance</h2>
+      <form id="take-attendance-form">
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <input
+          type="text"
+          name="student_email"
+          placeholder="Student Email"
+          required
+        />
+        <button type="submit">Mark Present</button>
+      </form>
+      <div class="result" id="attendance-result"></div>
+    </div> -->
+
+    <!-- In your Take Attendance section -->
+    <div id="attendance" class="section">
+      <h2>Take Attendance</h2>
+      <!-- <button id="scan-btn" type="button">Scan Card</button> -->
+      <button id="connect" type="button">Scan Card</button>
+      <div id="scanned-info" style="margin: 10px 0"></div>
+      <form id="take-attendance-form">
+        <input
+          type="text"
+          name="student_tag"
+          id="rfid"
+          required
+          placeholder="your rfid will show here"
+          readonly
+        />
+        <input type="hidden" name="student_email" id="student_email" required />
+        <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">Mark Present</button>
+      </form>
+      <div class="result" id="attendance-result"></div>
+    </div>
+
+    <div id="view" class="section">
+      <h2>View Attendance</h2>
+      <!-- Add inside your #view section, above or below #attendance-table -->
+      <button
+        id="print-attendance"
+        style="
+          margin: 10px 0;
+          background: #a78728;
+          color: white;
+          font-weight: bold;
+          border: none;
+          border-radius: 5px;
+          padding: 10px 20px;
+          cursor: pointer;
+        "
+      >
+        Print Attendance
+      </button>
+      <form id="view-attendance-form">
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">View Attendance</button>
+      </form>
+      <div id="attendance-table"></div>
+    </div>
+
+    <script>
+      fetch("/getProfile", {
+        method: "GET",
+        credentials: "include", // <-- This tells the browser to send cookies
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error("User not logged in");
+          return res.json();
+        })
+        .then((user) => {
+          document.getElementById("usernameDisplay").innerText = user.username;
+          if (user.profile_picture) {
+            // document.getElementById('userPhoto').src = '/uploads/' + user.profile_picture;
+            document.getElementById("userPhoto").src = user.profile_picture;
+          }
+        })
+        .catch((err) => {
+          console.error("Profile fetch error:", err);
+        });
+
+      // Tab navigation logic
+      function showSection(id) {
+        document
+          .querySelectorAll(".section")
+          .forEach((sec) => sec.classList.remove("active"));
+        document
+          .querySelectorAll(".navbar button")
+          .forEach((btn) => btn.classList.remove("active"));
+        document.getElementById(id).classList.add("active");
+        document
+          .querySelector(`.navbar button[onclick="showSection('${id}')"]`)
+          .classList.add("active");
+      }
+
+      // Create Course
+      // document.getElementById("create-course-form").onsubmit = async (e) => {
+      //   e.preventDefault();
+      //   const formData = new FormData(e.target);
+      //   const res = await fetch("/createCourse", {
+      //     method: "POST",
+      //     body: formData,
+      //   });
+      //   document.getElementById("course-create-result").innerText =
+      //     await res.text();
+      //   e.target.reset();
+      // };
+
+      // teacher.html
+      document.getElementById("create-course-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const course_name = e.target.course_name.value;
+        const course_code = e.target.course_code.value;
+        const res = await fetch("/createCourse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ course_name, course_code }),
+        });
+        document.getElementById("course-create-result").innerText =
+          await res.text();
+        e.target.reset();
+      };
+
+      // Assign Student
+      document.getElementById("assign-student-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const student_email = e.target.student_email.value;
+        const course_code = e.target.course_code.value;
+        const res = await fetch("/assignStudent", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ student_email, course_code }),
+        });
+        document.getElementById("assign-result").innerText = await res.text();
+        e.target.reset();
+      };
+
+      // Take Attendance
+      document.getElementById("take-attendance-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const course_code = e.target.course_code.value;
+        const student_email = e.target.student_email.value;
+        const student_tag = e.target.student_tag.value;
+        const res = await fetch("/takeAttendance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ course_code, student_email, student_tag }),
+        });
+        document.getElementById("attendance-result").innerText =
+          await res.text();
+        e.target.reset();
+        document.getElementById("scanned-info").innerHTML = "";
+      };
+
+      // View Attendance
+      // teacher.html
+      document.getElementById("view-attendance-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const course_code = e.target.course_code.value;
+        const res = await fetch("/getAttendance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ course_code }),
+        });
+        const data = await res.json();
+        let html = `<table>
+    <tr>
+      <th>Profile</th>
+      <th>Full Name</th>
+      <th>Matric</th>
+      <th>Email</th>
+      <th>Tag</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Status</th>
+    </tr>`;
+        data.forEach((row) => {
+          html += `<tr>
+      <td><img src="${
+        row.profile_picture || ""
+      }" alt="Profile" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
+      <td>${row.fullname}</td>
+      <td>${row.matric}</td>
+      <td>${row.student_email}</td>
+      <td>${row.tag}</td>
+      <td>${row.date}</td>
+      <td>${
+        row.clock_in_time
+          ? new Date(row.clock_in_time).toLocaleTimeString()
+          : ""
+      }</td>
+      <td>${row.status}</td>
+    </tr>`;
+        });
+        html += "</table>";
+        document.getElementById("attendance-table").innerHTML = html;
+      };
+
+      // Populate student and course dropdowns on page load
+      window.addEventListener("DOMContentLoaded", async () => {
+        // Fetch students
+        const studentRes = await fetch("/api/students");
+        const students = await studentRes.json();
+        const studentSelect = document.getElementById("student-select");
+        students.forEach((s) => {
+          const opt = document.createElement("option");
+          opt.value = s.email;
+          opt.textContent = `${s.fullname} (${s.email})`;
+          studentSelect.appendChild(opt);
+        });
+
+        // Fetch courses
+        const courseRes = await fetch("/api/courses");
+        const courses = await courseRes.json();
+        const courseSelect = document.getElementById("course-select");
+        courses.forEach((c) => {
+          const opt = document.createElement("option");
+          opt.value = c.course_code;
+          opt.textContent = `${c.course_name} (${c.course_code})`;
+          courseSelect.appendChild(opt);
+        });
+      });
+
+      // Example BLE scan simulation (replace with real BLE scan logic)
+      //   document.getElementById("scan-btn").onclick = async () => {
+      //     // Simulate BLE scan result
+      //     // In real use, use Web Bluetooth API to get the tag from the card
+      //     const scannedTag = prompt("Simulate BLE scan: Enter scanned tag value");
+
+      //     if (!scannedTag) return;
+
+      //     // Lookup student by tag
+      //     const res = await fetch(`/api/students`);
+      //     const students = await res.json();
+      //     const student = students.find((s) => s.tag === scannedTag);
+
+      //     const infoDiv = document.getElementById("scanned-info");
+      //     if (student) {
+      //       infoDiv.innerHTML = `
+      //   <b>Student Found:</b><br>
+      //   <img src="${
+      //     student.profile_picture || ""
+      //   }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
+      //   Name: ${student.fullname}<br>
+      //   Email: ${student.email}<br>
+      //   Matric: ${student.matric}<br>
+      //   Tag: ${student.tag}
+      // `;
+      //       document.getElementById("student_email").value = student.email;
+      //       document.getElementById("student_tag").value = student.tag;
+      //     } else {
+      //       infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${scannedTag}</span>`;
+      //       document.getElementById("student_email").value = "";
+      //       document.getElementById("student_tag").value = "";
+      //     }
+      //   };
+
+      // teacher.html
+      document.getElementById("print-attendance").onclick = function () {
+        // Only print the attendance table
+        const printContents =
+          document.getElementById("attendance-table").innerHTML;
+        const originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload(); // reload to restore event listeners
+      };
+    </script>
+
+    <script>
+      let device;
+      let characteristic;
+
+      const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+      const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+      document.getElementById("connect").addEventListener("click", async () => {
+        try {
+          device = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "ESP32" }],
+            optionalServices: [SERVICE_UUID],
+          });
+
+          const server = await device.gatt.connect();
+          const service = await server.getPrimaryService(SERVICE_UUID);
+          characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+          device.addEventListener("gattserverdisconnected", () => {
+            document.getElementById("neckguard-stat").textContent =
+              "Disconnected";
+            // document.getElementById("container").style.display = "none"; // hide UI
+            log("Device disconnected.");
+          });
+
+          readFromESP32();
+        } catch (error) {
+          log("Error: " + error);
+        }
+      });
+
+      document.getElementById("send").addEventListener("click", async () => {
+        const msg = document.getElementById("message").value;
+        if (!msg || !characteristic) return;
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(msg));
+        log(`Sent to NeckGuard: ${msg}`);
+        document.getElementById("message").value = "";
+      });
+
+      function log(text) {
+        // Update connection status if it's a successful connection
+        if (text.includes("Connected to")) {
+          document.getElementById("neckguard-stat").textContent = text;
+        }
+      }
+
+      // async function readFromESP32() {
+      //   try {
+      //     await characteristic.startNotifications(); // 👈 Subscribe to notifications
+      //     characteristic.addEventListener(
+      //       "characteristicvaluechanged",
+      //       async (event) => {
+      //         const decoder = new TextDecoder();
+      //         const value = event.target.value;
+      //         const received = decoder.decode(value).trim(); // Example: "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+
+      //         log(`NeckGuard says: ${received}`);
+
+      //         const [email, temp, hum, deviceId] = received
+      //           .split(",")
+      //           .map((s) => s.trim());
+
+      //         // Optional UI update:
+      //         document.getElementById("rfid").value = temp;
+      //         // document.getElementById("device-stat").textContent = deviceId;
+      //         document.getElementById("device-stat").textContent = "connected";
+      //         document.getElementById("device-stat").style.color = "green";
+      //       }
+      //     );
+
+      //     log("Subscribed to NeckGuard notifications.");
+      //   } catch (err) {
+      //     log("Notification error: " + err);
+
+      //     await loadUserData(); // ✅ refresh table with new reading
+      //   }
+      // }
+      // ...existing code...
+
+      async function readFromESP32() {
+        try {
+          await characteristic.startNotifications();
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            async (event) => {
+              const decoder = new TextDecoder();
+              const value = event.target.value;
+              const received = decoder.decode(value).trim(); // e.g. "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+
+              log(`NeckGuard says: ${received}`);
+
+              // Assume the tag is the 4th value (deviceId)
+              const [email, temp, hum, tag] = received
+                .split(",")
+                .map((s) => s.trim());
+
+              // Lookup student by tag
+              const res = await fetch(`/api/students`);
+              const students = await res.json();
+              const student = students.find((s) => s.tag === temp);
+
+              const infoDiv = document.getElementById("scanned-info");
+              if (student) {
+                infoDiv.innerHTML = `
+            <b>Student Found:</b><br>
+            <img src="${
+              student.profile_picture || ""
+            }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
+            Name: ${student.fullname}<br>
+            Email: ${student.email}<br>
+            Matric: ${student.matric}<br>
+            Tag: ${student.tag}
+          `;
+                document.getElementById("student_email").value = student.email;
+                document.getElementById("rfid").value = student.tag;
+              } else {
+                infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${tag}</span>`;
+                document.getElementById("student_email").value = "";
+                document.getElementById("rfid").value = tag;
+              }
+
+              // Optional: auto-submit attendance form if student found
+              // if (student) document.getElementById("take-attendance-form").requestSubmit();
+            }
+          );
+
+          log("Subscribed to NeckGuard notifications.");
+        } catch (err) {
+          log("Notification error: " + err);
+        }
+      }
+
+      // ...existing code...
+    </script>
+  </body>
+</html>

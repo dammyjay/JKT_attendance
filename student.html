@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Monitor Dashboard</title>
+    <title>student Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -22,7 +22,7 @@
         /* background-image: url(/Images/Background.png);
         background-size: auto;
         background-repeat: no-repeat; */
-        /* color: #333; */
+        color: #333;
         margin: 0;
         padding: 20px;
       }
@@ -38,9 +38,10 @@
         .header h1 {
           font-size: 24px;
         }
+
         button {
       width: 100%;
-      padding: 10px;
+      padding: 7px 15px;
       background: #a78728;
       color: white;
       border: none;
@@ -62,12 +63,12 @@
       }
 
       .btn-dark-green {
-        background-color: #645000;
+        background-color: #006400;
         color: white;
       }
 
       .btn-dark-green:hover {
-        background-color: #4d3b00;
+        background-color: #004d00;
       }
 
       .btn-light-green {
@@ -127,14 +128,12 @@
         cursor: pointer;
         /* width: 100px; */
         border-radius: 8px;
-        /* background-color: #a78728; */
       }
 
-      a:hover{
+      a {
         padding: 5px 10px;
         text-decoration: none;
         color: white;
-        /* background-color: #886621; */
         font-weight: bold;
         cursor: pointer;
         /* width: 100px; */
@@ -225,11 +224,11 @@
     <div class="header">
       <img
 
-        src="/Images/JKT logo.png"
+        src="/Images/calicare logo.png"
         alt="Site Logo"
         
       />
-      <h1>Welcome Monitor</h1>
+      <h1>Welcome Ticketer</h1>
     </div>
 
     <div class="navi">
@@ -246,7 +245,6 @@
         <span style="font-weight: bold" id="usernameDisplay"></span>
       </div>
       <div class="navi-header">
-        <!-- <a href="/profile" style="">Profile</a> -->
         <button onclick="window.location.href='/profile'">Profile</button>
         <a href="/logout" style="background-color: red">Logout</a>
       </div>
@@ -273,8 +271,9 @@
       </div>
     </div>
 
+   
 
-    <table style="">
+    <table style="visibility: hidden">
       <thead>
         <tr>
           <th>ID</th>
@@ -292,15 +291,7 @@
     </table>
 
     <script>
-      // fetch('/getProfile')
-      //   .then(res => res.json())
-      //   .then(user => {
-      //     document.getElementById('usernameDisplay').innerText = user.username;
-      //     if (user.profile_picture) {
-      //       document.getElementById('userPhoto').src = '/uploads/' + user.profile_picture;
-      //     }
-      //   });
-
+     
       flatpickr("#startTime", {
         enableTime: true,
         noCalendar: true,

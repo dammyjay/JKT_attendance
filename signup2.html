@@ -7,12 +7,12 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     />
-    <title>Signup</title>
+    <title>Teacher Registration</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     />
-    <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon" />
     <style>
       body {
         display: flex;
@@ -44,12 +44,6 @@
       input[type="password"],
       input[type="email"],
       input[type="number"] {
-        /* width: 100%;
-      padding: 10px;
-      margin: 10px 0 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px; */
-
         width: 100%;
         padding: 15px 10px;
         margin: 10px 0 20px;
@@ -59,16 +53,16 @@
       }
 
       input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="number"]:focus,
-textarea:focus {
-    outline: none;
-    border-color: #bfa046;
-    /* gold */
-    background-color: #fff9e6;
-    /* light gold background */
-}
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #bfa046;
+        /* gold */
+        background-color: #fff9e6;
+        /* light gold background */
+      }
 
       .gender-box {
         width: 100%;
@@ -105,19 +99,19 @@ textarea:focus {
         color: #666;
       }
       button {
-      width: 100%;
-      padding: 15px;
+        width: 100%;
+        padding: 15px;
 
-      background: #a78728;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #886621;
-    }
+        background: #a78728;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #886621;
+      }
       p {
         text-align: center;
         margin-top: 15px;
@@ -242,26 +236,31 @@ textarea:focus {
       alt="Background"
     /> -->
     <!-- <button id="connect" class="btn-export">Connect Device</button> -->
-    
-    <div class="form-container">
 
+    <div class="form-container">
       <img src="/Images/JKT logo.png" alt="Logo" class="logo" />
       <div class="log-details">
         <h2>Welcome Onboard!</h2>
         <p>PLEASE ENTER YOUR DETAILS</p>
       </div>
       <button id="connect">Connect Bluetooth</button>
-      <p id="device-stat" style="color: red;">Not connected</p>
-  
+      <p id="device-stat" style="color: red">Not connected</p>
+
       <form
         id="signup-form"
-        action="/signup"
+        action="/signup2"
         method="post"
         enctype="multipart/form-data"
       >
-       
         <div class="container">
-          <input id="rfid" type="text" name="tag" placeholder="your will display here when scan" required />
+          <input
+            id="rfid"
+            type="text"
+            name="tag"
+            placeholder="your will display here when scan"
+            required
+            readonly
+          />
           <span class="toggle-password">
             <i class="fa fa-search"></i>
           </span>
@@ -269,12 +268,11 @@ textarea:focus {
 
         <!-- <input type="email" name="email" required placeholder="Email" /> -->
         <div class="container">
-            <input type="text" name="email" placeholder="Email" required />
-            <span class="toggle-password">
-              <i class="fa fa-envelope"></i>
-            </span>
-          </div>
-        
+          <input type="text" name="email" placeholder="Email" required />
+          <span class="toggle-password">
+            <i class="fa fa-envelope"></i>
+          </span>
+        </div>
 
         <!-- <input type="text" name="username" required placeholder="Username" />
         -->
@@ -302,16 +300,6 @@ textarea:focus {
             <option>Not Specified</option>
           </select>
         </div>
-
-        <div class="gender-box">
-            <label style="font-size: 13px; color: grey; padding-left: 0px" for=""
-              >Role</label
-            >
-            <select name="role" required>
-              <option>ticketer</option>
-              <option>monitor</option>
-            </select>
-          </div>
 
         <div class="password-container">
           <input
@@ -380,7 +368,101 @@ textarea:focus {
           <button onclick="verifyOtp()">Verify OTP</button>
         </div>
       </div>
+
+      <div
+      id="loading-spinner"
+      style="display: none; text-align: center; margin: 10px"
+    >
+      <i
+        class="fa fa-spinner fa-spin"
+        style="font-size: 24px; color: #a78728"
+      ></i>
+      <p style="font-size: 12px; color: #a78728">Processing...</p>
     </div>
+    </div>
+
+   
+
+    <script>
+      document.getElementById("signup-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const spinner = document.getElementById("loading-spinner");
+        spinner.style.display = "block"; // Show spinner
+
+        const formData = new FormData(e.target); // Don't convert it to JSON
+
+        const res = await fetch("/signup2", {
+          method: "POST",
+          body: formData, // ✅ Send raw FormData
+        });
+
+        spinner.style.display = "none"; //
+
+        if (res.ok) {
+          document.getElementById("otp-modal").style.display = "block";
+          document.getElementById("signup-form").style.display = "none";
+        } else {
+          alert("Signup failed: " + (await res.text()));
+        }
+      };
+
+      async function verifyOtp() {
+        const otp = document.getElementById("otp-input").value;
+        const email = document.querySelector("input[name='email']").value;
+
+        const spinner = document.getElementById("loading-spinner");
+        spinner.style.display = "block"; // Show spinner
+
+        const res = await fetch("/verify-otp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, otp }),
+        });
+
+        const result = await res.text();
+        alert(result);
+
+        spinner.style.display = "none"; // Hide spinner
+        if (result.includes("success")) {
+          // Wait 2 seconds and redirect to login
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 1000);
+        }
+      }
+
+      const passwordInput = document.getElementById("password");
+      const togglePassword = document.getElementById("togglePassword");
+      const icon = togglePassword.querySelector("i");
+
+      togglePassword.addEventListener("click", () => {
+        const isHidden = passwordInput.type === "password";
+        passwordInput.type = isHidden ? "text" : "password";
+
+        // swap the icon
+        icon.classList.toggle("fa-eye");
+        icon.classList.toggle("fa-eye-slash");
+      });
+
+      // Handle image preview
+      const fileInput = document.getElementById("file-input");
+      const previewContainer = document.getElementById("preview-container");
+      const previewImage = document.getElementById("preview-image");
+
+      fileInput.addEventListener("change", function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            previewContainer.style.display = "flex"; // Display the preview container
+            previewImage.src = e.target.result; // Set the image source to the selected file
+          };
+          reader.readAsDataURL(file); // Read the file as a data URL
+        } else {
+          previewContainer.style.display = "none"; // Hide the preview if no file is selected
+        }
+      });
+    </script>
 
     <script>
       let device;
@@ -407,7 +489,6 @@ textarea:focus {
             log("Device disconnected.");
           });
 
-          
           readFromESP32();
         } catch (error) {
           log("Error: " + error);
@@ -451,7 +532,6 @@ textarea:focus {
               // document.getElementById("device-stat").textContent = deviceId;
               document.getElementById("device-stat").textContent = "connected";
               document.getElementById("device-stat").style.color = "green";
-
             }
           );
 
@@ -462,10 +542,6 @@ textarea:focus {
           await loadUserData(); // ✅ refresh table with new reading
         }
       }
-
-      
     </script>
-
-
   </body>
 </html>

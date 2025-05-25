@@ -7,23 +7,22 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
     />
-    <title>Signup</title>
+    <title>Student Registration</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
     />
-    <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon" />
     <style>
       body {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 100vh;
         /* background-image: url(Background.png); */
         background-size: cover;
         background-position: 50%;
         background-repeat: no-repeat;
-        background-color: #ebfafb;
+        background-color: #ffffff;
         font-family: Arial, sans-serif;
       }
       .form-container {
@@ -38,24 +37,30 @@
       }
       h2 {
         text-align: center;
-        color: #024c12;
+        color: #4c3502;
       }
       input[type="text"],
       input[type="password"],
       input[type="email"],
       input[type="number"] {
-        /* width: 100%;
-      padding: 10px;
-      margin: 10px 0 20px;
-      border: 1px solid #ccc;
-      border-radius: 5px; */
-
         width: 100%;
         padding: 15px 10px;
         margin: 10px 0 20px;
         border: 1px solid #ccc;
         border-radius: 10px;
         box-shadow: 0 0px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      input[type="text"]:focus,
+      input[type="email"]:focus,
+      input[type="password"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #bfa046;
+        /* gold */
+        background-color: #fff9e6;
+        /* light gold background */
       }
 
       .gender-box {
@@ -86,8 +91,8 @@
       }
       .toggle-password {
         position: absolute;
-        top: 50%;
-        right: 30px;
+        top: 45%;
+        right: 15px;
         transform: translateY(-50%);
         cursor: pointer;
         color: #666;
@@ -95,7 +100,7 @@
       button {
         width: 100%;
         padding: 15px;
-        background: #24d0d6;
+        background: #a78728;
         color: white;
         border: none;
         border-radius: 10px;
@@ -104,7 +109,7 @@
         margin: 10px 0 20px;
       }
       button:hover {
-        background: #20b2b7;
+        background: #886621;
       }
       p {
         text-align: center;
@@ -223,25 +228,45 @@
     </style>
   </head>
   <body>
-    <img class="mask" src="/Images/mask.png" alt="" />
-    <img
+    <!-- <img class="mask" src="/Images/mask.png" alt="" /> -->
+    <!-- <img
       src="/Images/necktrans.png"
       class="background-image"
       alt="Background"
-    />
+    /> -->
     <div class="form-container">
-      <img src="/Images/calicare logo.png" alt="Logo" class="logo" />
+      <img src="/Images/JKT logo.png" alt="Logo" class="logo" />
       <div class="log-details">
         <h2>Welcome Onboard!</h2>
         <p>PLEASE ENTER YOUR DETAILS</p>
       </div>
-
+      <button
+        id="connect"
+        style="width: auto; background: black; padding: 5px 10px"
+      >
+        connect bluetooth
+      </button>
+      <p id="device-stat" style="color: green"></p>
       <form
         id="signup-form"
         action="/signup"
         method="post"
         enctype="multipart/form-data"
       >
+        <div class="container">
+          <input
+            id="rfid"
+            type="text"
+            name="tag"
+            placeholder="Your card ID will display here"
+            required
+            readonly
+          />
+          <span id="togglePassword" class="toggle-password">
+            <i class="fa fa-id-card"></i>
+          </span>
+        </div>
+
         <!-- <input type="email" name="email" required placeholder="Email" /> -->
         <div class="container">
           <input type="text" name="email" placeholder="Email" required />
@@ -253,7 +278,7 @@
         <!-- <input type="text" name="username" required placeholder="Username" />
         -->
         <div class="container">
-          <input type="text" name="username" placeholder="Full name" required />
+          <input type="text" name="fullname" placeholder="Full name" required />
           <span class="toggle-password">
             <i class="fa fa-user"></i>
           </span>
@@ -277,7 +302,7 @@
           </select>
         </div>
 
-        <div class="password-container">
+        <!-- <div class="password-container">
           <input
             id="password"
             type="password"
@@ -287,6 +312,13 @@
           />
           <span id="togglePassword" class="toggle-password">
             <i class="fa fa-eye"></i>
+          </span>
+        </div> -->
+
+        <div class="container">
+          <input type="text" name="matric" placeholder="Matric No" required />
+          <span id="togglePassword" class="toggle-password">
+            <i class="fa fa-user-graduate"></i>
           </span>
         </div>
 
@@ -307,23 +339,35 @@
           <img id="preview-image" alt="Image Preview" />
         </div>
 
-        <label class="checkbox-label">
+        <!-- <label class="checkbox-label">
           <input type="checkbox" name="remember" />
           Remember me
-        </label>
-        <div class="terms">
+        </label> -->
+        <!-- <div class="terms">
           <label class="checkbox-label">
             <input type="checkbox" name="remember" />
             I agree to the
             <a href="terms.html" style="color: #1270b0">Terms and Conditions</a>
           </label>
-        </div>
-        <button type="submit">Sign Up</button>
+        </div> -->
+
+        <button type="submit">Register</button>
       </form>
-      <p>Already have an account? <a href="/login">Login</a></p>
+      <!-- Add this inside your .form-container, above or below the form -->
+      <div
+        id="loading-spinner"
+        style="display: none; text-align: center; margin: 10px"
+      >
+        <i
+          class="fa fa-spinner fa-spin"
+          style="font-size: 24px; color: #a78728"
+        ></i>
+        <p style="font-size: 12px; color: #a78728">Processing...</p>
+      </div>
+      <!-- <p>Already have an account? <a href="/login">Login</a></p> -->
 
       <!-- OTP Modal -->
-      <div id="otp-modal" style="display: none">
+      <!-- <div id="otp-modal" style="display: none">
         <div
           style="
             background: #fff;
@@ -343,30 +387,14 @@
           <input id="otp-input" placeholder="Enter OTP" />
           <button onclick="verifyOtp()">Verify OTP</button>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <script>
-      // document.getElementById("signup-form").onsubmit = async (e) => {
-      //   e.preventDefault();
-      //   const formData = new FormData(e.target);
-      //   const payload = Object.fromEntries(formData.entries());
-
-      //   const res = await fetch("/signup", {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify(payload),
-      //   });
-
-      //   if (res.ok) {
-      //     document.getElementById("otp-modal").style.display = "block";
-      //   } else {
-      //     alert("Signup failed: " + await res.text());
-      //   }
-      // };
-
       document.getElementById("signup-form").onsubmit = async (e) => {
         e.preventDefault();
+        const spinner = document.getElementById("loading-spinner");
+        spinner.style.display = "block"; // Show spinner
         const formData = new FormData(e.target); // Don't convert it to JSON
 
         const res = await fetch("/signup", {
@@ -374,33 +402,40 @@
           body: formData, // ✅ Send raw FormData
         });
 
+        spinner.style.display = "none"; // Hide spinner
+
+
         if (res.ok) {
-          document.getElementById("otp-modal").style.display = "block";
+          // document.getElementById("otp-modal").style.display = "block";
+          alert("Registration Succesfull");
+          setTimeout(() => {
+            window.location.href = "/admin/admin.html";
+          }, 1000);
         } else {
           alert("Signup failed: " + (await res.text()));
         }
       };
 
-      async function verifyOtp() {
-        const otp = document.getElementById("otp-input").value;
-        const email = document.querySelector("input[name='email']").value;
+      // async function verifyOtp() {
+      //   const otp = document.getElementById("otp-input").value;
+      //   const email = document.querySelector("input[name='email']").value;
 
-        const res = await fetch("/verify-otp", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, otp }),
-        });
+      //   const res = await fetch("/verify-otp", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ email, otp }),
+      //   });
 
-        const result = await res.text();
-        alert(result);
+      //   const result = await res.text();
+      //   alert(result);
 
-        if (result.includes("success")) {
-          // Wait 2 seconds and redirect to login
-          setTimeout(() => {
-            window.location.href = "/login";
-          }, 1000);
-        }
-      }
+      //   if (result.includes("success")) {
+      //     // Wait 2 seconds and redirect to login
+      //     setTimeout(() => {
+      //       window.location.href = "/login";
+      //     }, 1000);
+      //   }
+      // }
 
       const passwordInput = document.getElementById("password");
       const togglePassword = document.getElementById("togglePassword");
@@ -433,6 +468,86 @@
           previewContainer.style.display = "none"; // Hide the preview if no file is selected
         }
       });
+    </script>
+
+    <script>
+      let device;
+      let characteristic;
+
+      const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+      const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+
+      document.getElementById("connect").addEventListener("click", async () => {
+        try {
+          device = await navigator.bluetooth.requestDevice({
+            filters: [{ namePrefix: "ESP32" }],
+            optionalServices: [SERVICE_UUID],
+          });
+
+          const server = await device.gatt.connect();
+          const service = await server.getPrimaryService(SERVICE_UUID);
+          characteristic = await service.getCharacteristic(CHARACTERISTIC_UUID);
+
+          device.addEventListener("gattserverdisconnected", () => {
+            document.getElementById("neckguard-stat").textContent =
+              "Disconnected";
+            // document.getElementById("container").style.display = "none"; // hide UI
+            log("Device disconnected.");
+          });
+
+          readFromESP32();
+        } catch (error) {
+          log("Error: " + error);
+        }
+      });
+
+      document.getElementById("send").addEventListener("click", async () => {
+        const msg = document.getElementById("message").value;
+        if (!msg || !characteristic) return;
+        const encoder = new TextEncoder();
+        await characteristic.writeValue(encoder.encode(msg));
+        log(`Sent to NeckGuard: ${msg}`);
+        document.getElementById("message").value = "";
+      });
+
+      function log(text) {
+        // Update connection status if it's a successful connection
+        if (text.includes("Connected to")) {
+          document.getElementById("neckguard-stat").textContent = text;
+        }
+      }
+
+      async function readFromESP32() {
+        try {
+          await characteristic.startNotifications(); // 👈 Subscribe to notifications
+          characteristic.addEventListener(
+            "characteristicvaluechanged",
+            async (event) => {
+              const decoder = new TextDecoder();
+              const value = event.target.value;
+              const received = decoder.decode(value).trim(); // Example: "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
+
+              log(`NeckGuard says: ${received}`);
+
+              const [email, temp, hum, deviceId] = received
+                .split(",")
+                .map((s) => s.trim());
+
+              // Optional UI update:
+              document.getElementById("rfid").value = temp;
+              // document.getElementById("device-stat").textContent = deviceId;
+              document.getElementById("device-stat").textContent = "connected";
+              document.getElementById("device-stat").style.color = "green";
+            }
+          );
+
+          log("Subscribed to NeckGuard notifications.");
+        } catch (err) {
+          log("Notification error: " + err);
+
+          await loadUserData(); // ✅ refresh table with new reading
+        }
+      }
     </script>
   </body>
 </html>

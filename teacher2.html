@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ticketer Dashboard</title>
+    <title>Teacher Dashboard</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon">
+    <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
@@ -22,7 +22,7 @@
         /* background-image: url(/Images/Background.png);
         background-size: auto;
         background-repeat: no-repeat; */
-        color: #333;
+        /* color: #333; */
         margin: 0;
         padding: 20px;
       }
@@ -31,27 +31,26 @@
         align-items: center;
         gap: 10px;
       }
-      .header img{
+      .header img {
         width: 40px;
         height: 40px;
       }
-        .header h1 {
-          font-size: 24px;
-        }
-
-        button {
-      width: 100%;
-      padding: 7px 15px;
-      background: #a78728;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #886621;
-    }
+      .header h1 {
+        font-size: 24px;
+      }
+      button {
+        width: 100%;
+        padding: 10px;
+        background: #a78728;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #886621;
+      }
       .btn {
         padding: 5px 20px;
         border: none;
@@ -63,12 +62,12 @@
       }
 
       .btn-dark-green {
-        background-color: #006400;
+        background-color: #645000;
         color: white;
       }
 
       .btn-dark-green:hover {
-        background-color: #004d00;
+        background-color: #4d3b00;
       }
 
       .btn-light-green {
@@ -128,12 +127,14 @@
         cursor: pointer;
         /* width: 100px; */
         border-radius: 8px;
+        /* background-color: #a78728; */
       }
 
-      a {
+      a:hover {
         padding: 5px 10px;
         text-decoration: none;
         color: white;
+        /* background-color: #886621; */
         font-weight: bold;
         cursor: pointer;
         /* width: 100px; */
@@ -206,14 +207,14 @@
           height: 10px;
         }
         .header {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .header img{
-        width: 20px;
-        height: 20px;
-      }
+          display: inline-flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .header img {
+          width: 20px;
+          height: 20px;
+        }
         .header h1 {
           font-size: 16px;
         }
@@ -222,13 +223,8 @@
   </head>
   <body>
     <div class="header">
-      <img
-
-        src="/Images/calicare logo.png"
-        alt="Site Logo"
-        
-      />
-      <h1>Welcome Ticketer</h1>
+      <img src="/Images/JKT logo.png" alt="Site Logo" />
+      <h1>Welcome Lecturer</h1>
     </div>
 
     <div class="navi">
@@ -245,9 +241,88 @@
         <span style="font-weight: bold" id="usernameDisplay"></span>
       </div>
       <div class="navi-header">
+        <!-- <a href="/profile" style="">Profile</a> -->
         <button onclick="window.location.href='/profile'">Profile</button>
         <a href="/logout" style="background-color: red">Logout</a>
       </div>
+    </div>
+
+    <!-- create a new course -->
+    <div style="margin-top: 40px">
+      <h2>Create New Course</h2>
+      <form id="create-course-form">
+        <input
+          type="text"
+          name="course_name"
+          placeholder="Course Name"
+          required
+        />
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">Create Course</button>
+      </form>
+      <div id="course-create-result"></div>
+    </div>
+
+    <!-- assign student to course -->
+    <div style="margin-top: 40px">
+      <h2>Assign Student to Course</h2>
+      <form id="assign-student-form">
+        <input
+          type="text"
+          name="student_email"
+          placeholder="Student Email"
+          required
+        />
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">Assign Student</button>
+      </form>
+      <div id="assign-result"></div>
+    </div>
+
+    <!-- take attendance of student -->
+    <div style="margin-top: 40px">
+      <h2>Take Attendance</h2>
+      <form id="take-attendance-form">
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <input
+          type="text"
+          name="student_email"
+          placeholder="Student Email"
+          required
+        />
+        <button type="submit">Mark Present</button>
+      </form>
+      <div id="attendance-result"></div>
+    </div>
+
+    <!-- view attendance -->
+    <div style="margin-top: 40px">
+      <h2>View Attendance</h2>
+      <form id="view-attendance-form">
+        <input
+          type="text"
+          name="course_code"
+          placeholder="Course Code"
+          required
+        />
+        <button type="submit">View Attendance</button>
+      </form>
+      <div id="attendance-table"></div>
     </div>
 
     <div id="chart"></div>
@@ -271,9 +346,7 @@
       </div>
     </div>
 
-   
-
-    <table style="visibility: hidden">
+    <table style="">
       <thead>
         <tr>
           <th>ID</th>
@@ -291,7 +364,15 @@
     </table>
 
     <script>
-     
+      // fetch('/getProfile')
+      //   .then(res => res.json())
+      //   .then(user => {
+      //     document.getElementById('usernameDisplay').innerText = user.username;
+      //     if (user.profile_picture) {
+      //       document.getElementById('userPhoto').src = '/uploads/' + user.profile_picture;
+      //     }
+      //   });
+
       flatpickr("#startTime", {
         enableTime: true,
         noCalendar: true,
@@ -422,6 +503,61 @@
       socket.onerror = (error) => {
         console.error("WebSocket Error:", error);
         setInterval(fetchData, 5000); // Poll every 5 seconds if WebSocket fails
+      };
+    </script>
+
+    <script>
+      // Create Course
+      document.getElementById("create-course-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch("/createCourse", {
+          method: "POST",
+          body: formData,
+        });
+        document.getElementById("course-create-result").innerText =
+          await res.text();
+      };
+
+      // Assign Student
+      document.getElementById("assign-student-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch("/assignStudent", {
+          method: "POST",
+          body: formData,
+        });
+        document.getElementById("assign-result").innerText = await res.text();
+      };
+
+      // Take Attendance
+      document.getElementById("take-attendance-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch("/takeAttendance", {
+          method: "POST",
+          body: formData,
+        });
+        document.getElementById("attendance-result").innerText =
+          await res.text();
+      };
+
+      // View Attendance
+      document.getElementById("view-attendance-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const res = await fetch("/getAttendance", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        let html =
+          "<table><tr><th>Student</th><th>Date</th><th>Status</th></tr>";
+        data.forEach((row) => {
+          html += `<tr><td>${row.student_email}</td><td>${row.date}</td><td>${row.status}</td></tr>`;
+        });
+        html += "</table>";
+        document.getElementById("attendance-table").innerHTML = html;
       };
     </script>
   </body>
