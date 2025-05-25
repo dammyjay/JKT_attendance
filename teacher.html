@@ -95,7 +95,7 @@
       form input,
       form button {
         display: block;
-        width: 100%;
+        width: 90%;
         margin-bottom: 15px;
         padding: 12px;
         border-radius: 6px;
@@ -432,7 +432,6 @@
         e.target.reset();
       };
 
-
       document.getElementById("take-attendance-form").onsubmit = async (e) => {
         e.preventDefault();
         const course_code = e.target.course_code.value;
@@ -563,50 +562,42 @@
         }
       });
 
-      // Example BLE scan simulation (replace with real BLE scan logic)
-      //   document.getElementById("scan-btn").onclick = async () => {
-      //     // Simulate BLE scan result
-      //     // In real use, use Web Bluetooth API to get the tag from the card
-      //     const scannedTag = prompt("Simulate BLE scan: Enter scanned tag value");
-
-      //     if (!scannedTag) return;
-
-      //     // Lookup student by tag
-      //     const res = await fetch(`/api/students`);
-      //     const students = await res.json();
-      //     const student = students.find((s) => s.tag === scannedTag);
-
-      //     const infoDiv = document.getElementById("scanned-info");
-      //     if (student) {
-      //       infoDiv.innerHTML = `
-      //   <b>Student Found:</b><br>
-      //   <img src="${
-      //     student.profile_picture || ""
-      //   }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
-      //   Name: ${student.fullname}<br>
-      //   Email: ${student.email}<br>
-      //   Matric: ${student.matric}<br>
-      //   Tag: ${student.tag}
-      // `;
-      //       document.getElementById("student_email").value = student.email;
-      //       document.getElementById("student_tag").value = student.tag;
-      //     } else {
-      //       infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${scannedTag}</span>`;
-      //       document.getElementById("student_email").value = "";
-      //       document.getElementById("student_tag").value = "";
-      //     }
-      //   };
-
       // teacher.html
+      // document.getElementById("print-attendance").onclick = function () {
+      //   // Only print the attendance table
+      //   const printContents =
+      //     document.getElementById("attendance-table").innerHTML;
+      //   const originalContents = document.body.innerHTML;
+      //   document.body.innerHTML = printContents;
+      //   window.print();
+      //   document.body.innerHTML = originalContents;
+      //   window.location.reload(); // reload to restore event listeners
+      // };
+
       document.getElementById("print-attendance").onclick = function () {
-        // Only print the attendance table
         const printContents =
           document.getElementById("attendance-table").innerHTML;
-        const originalContents = document.body.innerHTML;
-        document.body.innerHTML = printContents;
-        window.print();
-        document.body.innerHTML = originalContents;
-        window.location.reload(); // reload to restore event listeners
+        const printWindow = window.open("", "", "height=600,width=900");
+        printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Attendance</title>
+        <style>
+          table { width: 100%; border-collapse: collapse; }
+          th, td { padding: 8px; text-align: center; border: 1px solid #ccc; }
+          th { background: #222 !important; color: #fff !important;  }
+        </style>
+      </head>
+      <body>
+        <h2>Attendance</h2>
+        ${printContents}
+      </body>
+    </html>
+  `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
       };
 
       async function updateLiveAttendanceTable() {
