@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teacher Dashboard</title>
     <link rel="icon" href="/Images/JKT logo bg.png" type="image/x-icon" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -29,11 +31,11 @@
       }
       .navbar button {
         flex: 1;
-        padding: 16px;
+        padding: 5px;
         background: none;
         border: none;
         color: white;
-        font-size: 16px;
+        font-size: 12px;
         cursor: pointer;
         transition: background 0.2s;
       }
@@ -117,7 +119,8 @@
       #attendance-table {
         margin-top: 10px;
         font-size: 15px;
-        color: #295153;
+        /* color: #295153; */
+        color: white;
       }
       table {
         width: 100%;
@@ -129,18 +132,57 @@
         /* border: 1px solid #ccc; */
         padding: 8px;
         text-align: center;
+        color: #000000;
       }
       th {
-        background: #f2f2f2;
+        background: #000000;
+        color: #ffffff;
       }
-      @media (max-width: 600px) {
+
+      .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        /* allows horizontal scroll if needed */
+        -webkit-overflow-scrolling: touch;
+        /* smooth scrolling on iOS */
+      }
+      .user-table th,
+      .user-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+      }
+
+      /* Make profile images smaller on mobile */
+      .user-table img {
+        width: 35px !important;
+        height: 35px !important;
+      }
+      @media (max-width: 400px) {
+        .table-responsive {
+          width: 100%;
+          overflow-x: auto;
+          /* allows horizontal scroll if needed */
+          -webkit-overflow-scrolling: touch;
+          /* smooth scrolling on iOS */
+        }
+        .user-table th,
+        .user-table td {
+          padding: 8px 6px;
+          font-size: 12px;
+        }
+
+        /* Make profile images smaller on mobile */
+        .user-table img {
+          width: 35px !important;
+          height: 35px !important;
+        }
         .section {
           max-width: 98vw;
           padding: 10px;
         }
         .navbar button {
-          font-size: 13px;
-          padding: 10px;
+          font-size: 12px;
+          padding: 5px;
         }
       }
 
@@ -275,8 +317,14 @@
       <div id="neckguard-stat" style="margin-bottom: 10px; color: red">
         Not Connected
       </div>
-      <button style="width: auto; padding: 5px 10px; background-color: black;" id="connect" type="button">Connect to Scan Card</button><br><br>
-      
+      <button
+        style="width: auto; padding: 5px 10px; background-color: black"
+        id="connect"
+        type="button"
+      >
+        Connect to Scan Card</button
+      ><br /><br />
+
       <form id="take-attendance-form">
         <select
           name="course_code"
@@ -302,33 +350,63 @@
           placeholder="your rfid will show here"
           readonly
         />
-        <input type="hidden" name="student_email" id="student_email" placeholder="your email will show here after scan" required readonly/>
+        <input
+          type="hidden"
+          name="student_email"
+          id="student_email"
+          placeholder="your email will show here after scan"
+          required
+          readonly
+        />
         <!-- <input type="hidden" name="student_tag" id="student_tag" required /> -->
-        
+
         <button type="submit">Mark Present</button>
       </form>
       <div class="result" id="attendance-result"></div>
-      <div id="live-attendance-table"></div>
+      <div class="table-responsive" id="live-attendance-table"></div>
     </div>
 
     <div id="view" class="section">
       <h2>View Attendance</h2>
       <!-- Add inside your #view section, above or below #attendance-table -->
-      <button
-        id="print-attendance"
-        style="
-          margin: 10px 0;
-          background: #a78728;
-          color: white;
-          font-weight: bold;
-          border: none;
-          border-radius: 5px;
-          padding: 10px 20px;
-          cursor: pointer;
-        "
+      <div
+        style="display: flex; justify-self: center; gap: 10px"
+        class="attendance-view-btn"
       >
-        Print Attendance
-      </button>
+        <!-- print attendance button  -->
+        <button
+          id="print-attendance"
+          style="
+            margin: 10px 0;
+            background: #a78728;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+          "
+        >
+          Print Attendance
+        </button>
+
+        <!-- export pdf button -->
+        <!-- <button
+          id="export-pdf"
+          style="
+            margin: 10px 0;
+            background: #000000;
+            color: white;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+          "
+        >
+          Export as PDF
+        </button> -->
+      </div>
       <form id="view-attendance-form">
         <!-- <input
           type="text"
@@ -358,7 +436,7 @@
           id="attendance-date"
           required
           style="
-            width: 100%;
+            width: 94%;
             margin-bottom: 15px;
             padding: 12px;
             border-radius: 6px;
@@ -368,9 +446,10 @@
         />
         <button type="submit">View Attendance</button>
       </form>
-      <div id="attendance-table"></div>
+      <div class="table-responsive" id="attendance-table"></div>
     </div>
 
+    <!-- script to get profile of the user teacher and handle navigations -->
     <script>
       fetch("/getProfile", {
         method: "GET",
@@ -603,6 +682,54 @@
         printWindow.close();
       };
 
+      //   async function updateLiveAttendanceTable() {
+      //     const course_code = document.getElementById(
+      //       "attendance-course-select"
+      //     ).value;
+      //     if (!course_code) {
+      //       document.getElementById("live-attendance-table").innerHTML = "";
+      //       return;
+      //     }
+      //     const today = new Date().toISOString().split("T")[0];
+      //     const res = await fetch("/getAttendance", {
+      //       method: "POST",
+      //       headers: { "Content-Type": "application/json" },
+      //       body: JSON.stringify({ course_code, date: today }),
+      //     });
+      //     const data = await res.json();
+      //     let html = `<table>
+      // <tr>
+      //   <th>Profile</th>
+      //   <th>Full Name</th>
+      //   <th>Matric</th>
+      //   <th>Email</th>
+      //   <th>Tag</th>
+      //   <th>Date</th>
+      //   <th>Time</th>
+      //   <th>Status</th>
+      // </tr>`;
+      //     data.forEach((row) => {
+      //       html += `<tr>
+      //   <td><img src="${
+      //     row.profile_picture || ""
+      //   }" alt="Profile" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
+      //   <td>${row.fullname}</td>
+      //   <td>${row.matric}</td>
+      //   <td>${row.student_email}</td>
+      //   <td>${row.tag}</td>
+      //   <td>${row.date}</td>
+      //   <td>${
+      //     row.clock_in_time
+      //       ? new Date(row.clock_in_time).toLocaleTimeString()
+      //       : ""
+      //   }</td>
+      //   <td>${row.status}</td>
+      // </tr>`;
+      //     });
+      //     html += "</table>";
+      //     document.getElementById("live-attendance-table").innerHTML = html;
+      //   }
+
       async function updateLiveAttendanceTable() {
         const course_code = document.getElementById(
           "attendance-course-select"
@@ -618,40 +745,49 @@
           body: JSON.stringify({ course_code, date: today }),
         });
         const data = await res.json();
-        let html = `<table>
-    <tr>
-      <th>Profile</th>
-      <th>Full Name</th>
-      <th>Matric</th>
-      <th>Email</th>
-      <th>Tag</th>
-      <th>Date</th>
-      <th>Time</th>
-      <th>Status</th>
-    </tr>`;
-        data.forEach((row) => {
-          html += `<tr>
-      <td><img src="${
-        row.profile_picture || ""
-      }" alt="Profile" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
-      <td>${row.fullname}</td>
-      <td>${row.matric}</td>
-      <td>${row.student_email}</td>
-      <td>${row.tag}</td>
-      <td>${row.date}</td>
-      <td>${
-        row.clock_in_time
-          ? new Date(row.clock_in_time).toLocaleTimeString()
-          : ""
-      }</td>
-      <td>${row.status}</td>
-    </tr>`;
-        });
-        html += "</table>";
+        let html = `
+    <div class="table-responsive">
+      <table class="attendance-table">
+        <tr>
+          <th>Profile</th>
+          <th>Full Name</th>
+          <th>Matric</th>
+          <th>Email</th>
+          <th>Tag</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+        </tr>
+        ${data
+          .map(
+            (row) => `
+          <tr>
+            <td><img src="${
+              row.profile_picture || ""
+            }" alt="Profile" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"></td>
+            <td>${row.fullname}</td>
+            <td>${row.matric}</td>
+            <td>${row.student_email}</td>
+            <td>${row.tag}</td>
+            <td>${row.date}</td>
+            <td>${
+              row.clock_in_time
+                ? new Date(row.clock_in_time).toLocaleTimeString()
+                : ""
+            }</td>
+            <td>${row.status}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </table>
+    </div>
+  `;
         document.getElementById("live-attendance-table").innerHTML = html;
       }
     </script>
 
+    <!-- take attendance section script with ble connection -->
     <script>
       let device;
       let characteristic;
@@ -703,92 +839,6 @@
           document.getElementById("neckguard-stat").textContent = text;
         }
       }
-
-      // async function readFromESP32() {
-      //   try {
-      //     await characteristic.startNotifications(); // 👈 Subscribe to notifications
-      //     characteristic.addEventListener(
-      //       "characteristicvaluechanged",
-      //       async (event) => {
-      //         const decoder = new TextDecoder();
-      //         const value = event.target.value;
-      //         const received = decoder.decode(value).trim(); // Example: "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
-
-      //         log(`NeckGuard says: ${received}`);
-
-      //         const [email, temp, hum, deviceId] = received
-      //           .split(",")
-      //           .map((s) => s.trim());
-
-      //         // Optional UI update:
-      //         document.getElementById("rfid").value = temp;
-      //         // document.getElementById("device-stat").textContent = deviceId;
-      //         document.getElementById("device-stat").textContent = "connected";
-      //         document.getElementById("device-stat").style.color = "green";
-      //       }
-      //     );
-
-      //     log("Subscribed to NeckGuard notifications.");
-      //   } catch (err) {
-      //     log("Notification error: " + err);
-
-      //     await loadUserData(); // ✅ refresh table with new reading
-      //   }
-      // }
-      // ...existing code...
-
-      // async function readFromESP32() {
-      //   try {
-      //     await characteristic.startNotifications();
-      //     characteristic.addEventListener(
-      //       "characteristicvaluechanged",
-      //       async (event) => {
-      //         const decoder = new TextDecoder();
-      //         const value = event.target.value;
-      //         const received = decoder.decode(value).trim(); // e.g. "zucali2022@gmail.com , 25.95 , 44.05 , 24:6f:28:bb:f9:02"
-
-      //         log(`NeckGuard says: ${received}`);
-
-      //         // Assume the tag is the 4th value (deviceId)
-      //         const [email, temp, hum, tag] = received
-      //           .split(",")
-      //           .map((s) => s.trim());
-
-      //         // Lookup student by tag
-      //         const res = await fetch(`/api/students`);
-      //         const students = await res.json();
-      //         const student = students.find((s) => s.tag === temp);
-
-      //         const infoDiv = document.getElementById("scanned-info");
-      //         if (student) {
-      //           infoDiv.innerHTML = `
-      //       <b>Student Found:</b><br>
-      //       <img src="${
-      //         student.profile_picture || ""
-      //       }" style="width:40px;height:40px;border-radius:50%;object-fit:cover;"><br>
-      //       Name: ${student.fullname}<br>
-      //       Email: ${student.email}<br>
-      //       Matric: ${student.matric}<br>
-      //       Tag: ${student.tag}
-      //     `;
-      //           document.getElementById("student_email").value = student.email;
-      //           document.getElementById("rfid").value = student.tag;
-      //         } else {
-      //           infoDiv.innerHTML = `<span style="color:red;">No student found for tag: ${tag}</span>`;
-      //           document.getElementById("student_email").value = "";
-      //           document.getElementById("rfid").value = tag;
-      //         }
-
-      //         // Optional: auto-submit attendance form if student found
-      //         // if (student) document.getElementById("take-attendance-form").requestSubmit();
-      //       }
-      //     );
-
-      //     log("Subscribed to NeckGuard notifications.");
-      //   } catch (err) {
-      //     log("Notification error: " + err);
-      //   }
-      // }
 
       async function readFromESP32() {
         try {
@@ -844,6 +894,60 @@
       }
 
       // ...existing code...
+    </script>
+
+    <!-- script to export pdf attendance -->
+    <script>
+      document.getElementById("export-pdf").onclick = function () {
+        const attendanceTable = document.getElementById("attendance-table");
+        if (!attendanceTable.innerHTML.trim()) {
+          alert("No attendance data to export.");
+          return;
+        }
+
+        // Get course and date info
+        const courseSelect = document.getElementById("view-course-select");
+        const courseText =
+          courseSelect.options[courseSelect.selectedIndex].text;
+        const courseCode = courseSelect.value;
+        const date = document.getElementById("attendance-date").value;
+        const studentCount =
+          attendanceTable.querySelectorAll("tbody tr").length ||
+          attendanceTable.querySelectorAll("tr").length - 1;
+
+        // Create a temporary container with header + table
+        const tempDiv = document.createElement("div");
+        tempDiv.style.background = "#fff";
+        tempDiv.style.padding = "20px";
+        tempDiv.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <h2 style="margin:0 0 8px 0;">Attendance Sheet</h2>
+      <div><b>Course:</b> ${courseText}</div>
+      <div><b>Course Code:</b> ${courseCode}</div>
+      <div><b>Date:</b> ${date}</div>
+      <div><b>Student Count:</b> ${studentCount}</div>
+    </div>
+    <div style="overflow-x:auto;">${attendanceTable.innerHTML}</div>
+  `;
+
+        // Set table min-width to fit all columns
+        tempDiv.querySelector("table").style.minWidth = "1100px";
+        tempDiv.querySelector("table").style.fontSize = "12px";
+
+        html2canvas(tempDiv, { scale: 2, useCORS: true }).then((canvas) => {
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new window.jspdf.jsPDF({
+            orientation: "landscape",
+            unit: "pt",
+            format: "a4",
+          });
+          const pageWidth = pdf.internal.pageSize.getWidth();
+          const imgWidth = pageWidth - 40;
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          pdf.addImage(imgData, "PNG", 20, 20, imgWidth, imgHeight);
+          pdf.save(courseCode + date+ "attendance.pdf");
+        });
+      };
     </script>
   </body>
 </html>

@@ -187,7 +187,56 @@
         padding: 5px 10px;
         cursor: pointer;
       }
+      .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        /* allows horizontal scroll if needed */
+        -webkit-overflow-scrolling: touch;
+        /* smooth scrolling on iOS */
+      }
+
+      .user-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+        /* sets minimum width to avoid squishing too much */
+        font-family: sans-serif;
+      }
+
+      .user-table th {
+        background-color: #333;
+        color: white;
+        text-align: left;
+        padding: 12px;
+      }
+
+      .user-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .user-table tr:hover {
+        background-color: #f5f5f5;
+      }
       @media (max-width: 600px) {
+        .table-responsive {
+          width: 100%;
+          overflow-x: auto;
+          /* allows horizontal scroll if needed */
+          -webkit-overflow-scrolling: touch;
+          /* smooth scrolling on iOS */
+        }
+        .user-table th,
+        .user-table td {
+          padding: 8px 6px;
+          font-size: 12px;
+        }
+
+        /* Make profile images smaller on mobile */
+        .user-table img {
+          width: 35px !important;
+          height: 35px !important;
+        }
         .navi-button {
           display: flex;
           justify-content: space-around;
@@ -322,7 +371,7 @@
         />
         <button type="submit">View Attendance</button>
       </form>
-      <div id="attendance-table"></div>
+      <div id="attendance-table" class="table-responsive"></div>
     </div>
 
     <div id="chart"></div>
@@ -345,23 +394,27 @@
         <img src="/Images/Exercise.png" alt="" />
       </div>
     </div>
-
-    <table style="">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Sensor (%)</th>
-          <!--                 <th>Humidity</th> -->
-          <th>Date</th>
-          <th>Time</th>
-        </tr>
-      </thead>
-      <tbody id="dataTable" style="visibility: hidden">
-        <tr>
-          <td colspan="4">Loading data...</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="table-responsive">
+      <table
+        class="user-table"
+        style="width: 80%; border-collapse: collapse; margin-top: 20px"
+      >
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Sensor (%)</th>
+            <!--                 <th>Humidity</th> -->
+            <th>Date</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="dataTable" style="visibility: hidden">
+          <tr>
+            <td colspan="4">Loading data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <script>
       // fetch('/getProfile')
@@ -551,12 +604,27 @@
           body: formData,
         });
         const data = await res.json();
-        let html =
-          "<table><tr><th>Student</th><th>Date</th><th>Status</th></tr>";
-        data.forEach((row) => {
-          html += `<tr><td>${row.student_email}</td><td>${row.date}</td><td>${row.status}</td></tr>`;
-        });
-        html += "</table>";
+        // let html =
+        //   "<table><tr><th>Student</th><th>Date</th><th>Status</th></tr>";
+        // data.forEach((row) => {
+        //   html += `<tr><td>${row.student_email}</td><td>${row.date}</td><td>${row.status}</td></tr>`;
+        // });
+        // html += "</table>";
+        // document.getElementById("attendance-table").innerHTML = html;
+
+        let html = `
+  <div class="table-responsive">
+    <table class="user-table">
+      <tr><th>Student</th><th>Date</th><th>Status</th></tr>
+      ${data
+        .map(
+          (row) =>
+            `<tr><td>${row.student_email}</td><td>${row.date}</td><td>${row.status}</td></tr>`
+        )
+        .join("")}
+    </table>
+  </div>
+`;
         document.getElementById("attendance-table").innerHTML = html;
       };
     </script>
