@@ -274,6 +274,45 @@ app.put("/admin/users/:id", isAdmin, async (req, res) => {
   }
 });
 
+// Get all courses
+app.get("/admin/courses", isAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, course_name, course_code FROM courses"
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+// Delete a course
+app.delete("/admin/courses/:id", isAdmin, async (req, res) => {
+  try {
+    await pool.query("DELETE FROM courses WHERE id = $1", [req.params.id]);
+    res.sendStatus(204);
+  } catch (err) {
+    res.status(500).send("Server error");
+  }
+});
+
+// Update courses details (course_name, course_code)
+app.put("/admin/courses/:id", isAdmin, async (req, res) => {
+  const courseId = req.params.id;
+  const { course_name, course_code } = req.body;
+
+  try {
+    await pool.query(
+      "UPDATE courses SET course_name = $1, course_code = $2 WHERE id = $3",
+      [course_name, course_code, courseId]
+    );
+    res.status(200).send("Course updated");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error updating course");
+  }
+});
+
 app.get("/getUserDeviceData", async (req, res) => {
   const { email } = req.query;
   const result = await pool.query(
@@ -1018,46 +1057,116 @@ app.get("/getDataByDate", async (req, res) => {
 
 // Database Table: exercises (id, title, video_url, description, instructor)
 
-app.get("/admin/exercises", async (req, res) => {
-  const result = await pool.query("SELECT * FROM exercises ORDER BY id DESC");
+// app.get("/admin/exercises", async (req, res) => {
+//   const result = await pool.query("SELECT * FROM exercises ORDER BY id DESC");
+//   res.json(result.rows);
+// });
+
+// app.post("/admin/exercises", async (req, res) => {
+//   const { title, video_url, description, instructor, poster_image, category } =
+//     req.body;
+//   await pool.query(
+//     "INSERT INTO exercises (title, video_url, description, instructor, poster_image, category) VALUES ($1, $2, $3, $4, $6, $7)",
+//     [title, video_url, description, instructor, poster_image, category]
+//   );
+//   res.sendStatus(200);
+// });
+
+// app.put("/admin/exercises/:id", async (req, res) => {
+//   const { title, video_url, description, instructor, poster_image, category } =
+//     req.body;
+//   await pool.query(
+//     "UPDATE exercises SET title = $1, video_url = $2, description = $3, instructor = $4, poster_image =$6, category =$7 WHERE id = $5",
+//     [
+//       title,
+//       video_url,
+//       description,
+//       instructor,
+//       poster_image,
+//       category,
+//       req.params.id,
+//     ]
+//   );
+//   res.sendStatus(200);
+// });
+
+// app.delete("/admin/exercises/:id", async (req, res) => {
+//   await pool.query("DELETE FROM exercises WHERE id = $1", [req.params.id]);
+//   res.sendStatus(200);
+// });
+
+// app.post(
+//   "/admin/add-exercise",
+//   exerciseUpload.single("poster_image"),
+//   async (req, res) => {
+//     const { title, description, instructor, video_url, category } = req.body;
+//     const poster_image = req.file ? req.file.path : null;
+
+//     try {
+//       await pool.query(
+//         `
+//       INSERT INTO exercises (title, description, instructor, video_url, poster_image, category)
+//       VALUES ($1, $2, $3, $4, $5, $6)
+//     `,
+//         [title, description, instructor, video_url, poster_image, category]
+//       );
+
+//       res.send("Exercise added successfully.");
+//     } catch (err) {
+//       console.error("❌ Error adding exercise:", err);
+//       res.status(500).send("Error saving exercise.");
+//     }
+//   }
+// );
+
+app.get("/admin/students", async (req, res) => {
+  const result = await pool.query("SELECT * FROM students ORDER BY id DESC");
   res.json(result.rows);
 });
 
-app.post("/admin/exercises", async (req, res) => {
+
+app.post("/admin/students", async (req, res) => {
   const { title, video_url, description, instructor, poster_image, category } =
     req.body;
   await pool.query(
-    "INSERT INTO exercises (title, video_url, description, instructor, poster_image, category) VALUES ($1, $2, $3, $4, $6, $7)",
+    "INSERT INTO students (title, video_url, description, instructor, poster_image, category) VALUES ($1, $2, $3, $4, $6, $7)",
     [title, video_url, description, instructor, poster_image, category]
   );
   res.sendStatus(200);
 });
 
-app.put("/admin/exercises/:id", async (req, res) => {
-  const { title, video_url, description, instructor, poster_image, category } =
-    req.body;
+// app.put("/admin/students/:id", async (req, res) => {
+//   const { fullname, phone, matric} =
+//     req.body;
+//   await pool.query(
+//     "UPDATE students SET fullname = $1, phone = $2, matric = $3, WHERE id = $4",
+//     [
+//       fullname,
+//       phone,
+//       matric,
+//       req.params.id,
+//     ]
+//   );
+//   res.sendStatus(200);
+// });
+
+app.put("/admin/students/:id", async (req, res) => {
+  const { fullname, phone, matric } = req.body;
   await pool.query(
-    "UPDATE exercises SET title = $1, video_url = $2, description = $3, instructor = $4, poster_image =$6, category =$7 WHERE id = $5",
-    [
-      title,
-      video_url,
-      description,
-      instructor,
-      poster_image,
-      category,
-      req.params.id,
-    ]
+    "UPDATE students SET fullname = $1, phone = $2, matric = $3 WHERE id = $4",
+    [fullname, phone, matric, req.params.id]
   );
   res.sendStatus(200);
 });
 
-app.delete("/admin/exercises/:id", async (req, res) => {
-  await pool.query("DELETE FROM exercises WHERE id = $1", [req.params.id]);
+
+app.delete("/admin/students/:id", async (req, res) => {
+  await pool.query("DELETE FROM students WHERE id = $1", [req.params.id]);
   res.sendStatus(200);
 });
 
 app.post(
-  "/admin/add-exercise",
+  "/admin/add-student",
   exerciseUpload.single("poster_image"),
   async (req, res) => {
     const { title, description, instructor, video_url, category } = req.body;

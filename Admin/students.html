@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Calicare Admin Dashboard</title>
+    <title>Students</title>
     <link rel="stylesheet" href="/main.css" />
-    <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+    <link rel="icon" href="/Images/JKT logo.png" type="image/x-icon" />
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -21,7 +21,7 @@
         margin-bottom: 15px;
         border: 3px solid #a78528;
       }
-  
+
       .sidebar {
         width: fit-content;
         background: #fce7a2;
@@ -31,29 +31,29 @@
         padding: 20px;
         transition: transform 0.3s ease;
       }
-  
+
       .sidebar.hidden {
         transform: translateX(-100%);
       }
-  
+
       .sidebar h2 {
         color: #000000;
       }
-  
+
       .sidebar ul {
         list-style: none;
         padding: 0;
       }
-  
+
       .sidebar ul li {
         margin: 20px 0;
       }
-  
+
       .sidebar ul li a {
         color: rgb(0, 0, 0);
         text-decoration: none;
       }
-  
+
       .sidebar ul li a:hover {
         color: #a78528;
         text-decoration: underline;
@@ -65,13 +65,13 @@
         padding: 6px 12px;
         text-decoration: none;
       }
-  
+
       .main {
         margin-left: 200px;
         padding: 20px;
         flex: 1;
       }
-  
+
       .menu-toggle {
         display: none;
         position: fixed;
@@ -85,7 +85,7 @@
         z-index: 1000;
         cursor: pointer;
       }
-  
+
       table {
         width: 100%;
         border-collapse: collapse;
@@ -94,7 +94,7 @@
         display: block;
         border: none;
       }
-  
+
       th,
       td {
         /* border: 1px solid #ccc; */
@@ -102,11 +102,11 @@
         text-align: left;
         white-space: nowrap;
       }
-  
+
       th {
         background-color: #f4f4f4;
       }
-  
+
       button {
         padding: 6px 12px;
         cursor: pointer;
@@ -116,7 +116,7 @@
         border-radius: 10px;
         border-color: #a78528;
       }
-  
+
       img {
         width: 50px;
         height: 50px;
@@ -132,58 +132,60 @@
         justify-content: space-between;
         text-align: center;
       }
-  
+      
+
+
       @media (max-width: 768px) {
         body {
           flex-direction: column;
         }
-  
+
         .sidebar {
           position: fixed;
           height: 100%;
           transform: translateX(-100%);
           z-index: 999;
         }
-  
+
         .sidebar.show {
           transform: translateX(0);
         }
-  
+
         .main {
           margin-left: 0;
           margin-top: 20px;
           padding: 10px;
         }
-  
+
         table {
           font-size: 14px;
         }
-  
+
         th,
         td {
           padding: 6px;
         }
-  
+
         .users-table th {
           text-align: center;
         }
-  
+
         button {
           padding: 4px 8px;
           font-size: 12px;
         }
-  
+
         .menu-toggle {
           display: block;
         }
       }
-  
+
       @media (max-width: 480px) {
         th,
         td {
           font-size: 12px;
         }
-  
+
         img {
           width: 40px;
           height: 40px;
@@ -211,8 +213,8 @@
           <li><a href="/Admin/dashboard-admin.html">Dashboard</a></li>
           <li><a href="/Admin/admin.html">Users</a></li>
           <li><a href="/Admin/courses.html">Courses</a></li>
-          <li><a href="/Admin/students.html">Students</a></li>
-          <li><a class="active" href="/Admin/setting-admin.html">Settings</a></li>
+          <li><a class="active" href="/Admin/students.html">Students</a></li>
+          <li><a href="/Admin/setting-admin.html">Settings</a></li>
           <li><a href="/Admin/profile-admin.html">Profile</a></li>
           <li><a href="/logout">Logout</a></li>
         </ul>
@@ -222,12 +224,21 @@
         <h1>Welcome Admin</h1>
         <span style="color: #28a745; font-weight: bold" id="username"></span>
 
+        <div class="rowa">
+          <h2>Registered Students</h2>
+          <div class="rowa-button">
+            <button onclick="window.location.href= '/signup'">
+              Add Student
+            </button>
+          </div>
+        </div>
+
         <form
-          id="exerciseForm"
+          id="studentForm"
           enctype="multipart/form-data"
           style="max-width: 500px"
         >
-          <h3>Add New Exercise</h3>
+          <!-- <h3>Add New Exercise</h3>
 
           <label>Title</label><br />
           <input type="text" name="title" required /><br /><br />
@@ -253,19 +264,19 @@
             <option value="Legs">Legs</option></select
           ><br /><br />
 
-          <button type="submit">Upload</button>
+          <button type="submit">Upload</button> -->
         </form>
 
-        <table id="exercise-table" class="users-table">
+        <table id="student-table" class="users-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Video URL</th>
-              <th>Description</th>
-              <th>Instructor</th>
-              <th>Poster</th>
-              <th>Category</th>
+              <th>Picture</th>
+              <th>Email</th>
+              <th>Fullname</th>
+              <th>Phone</th>
+              <th>Matric No</th>
+              <th>Gender</th>
+              <th>tag</th>
               <th>Created At</th>
               <th>Actions</th>
             </tr>
@@ -282,22 +293,20 @@
       }
 
       async function loadExercises() {
-        const res = await fetch("/admin/exercises");
+        const res = await fetch("/admin/students");
         const exercises = await res.json();
-        const tbody = document.querySelector("#exercise-table tbody");
+        const tbody = document.querySelector("#student-table tbody");
         tbody.innerHTML = "";
         exercises.forEach((ex) => {
           tbody.innerHTML += `
             <tr>
-                <td>${ex.id}</td>
-                <td>${ex.title}</td>
-                <td><a href="${ex.video_url}" target="_blank">View</a></td>
-                <td>${ex.description}</td>
-                <td>${ex.instructor}</td>
-                <td><img src="${
-                  ex.poster_image
-                }" alt="Poster" style="width: 50px; height: 50px;"></td>
-                <td>${ex.category}</td>
+                <td><img src="${ex.profile_picture}" alt="Profile Picture"></td>
+                <td>${ex.email}</td>
+                <td>${ex.fullname}</td>
+                <td>${ex.phone}</td>
+                <td>${ex.matric}</td>
+                <td>${ex.gender}</td>
+                <td>${ex.tag}</td>
                 <td>${new Date(ex.created_at).toLocaleDateString()}</td>
                 <td>
                 <button onclick="editExercise(${ex.id})">Edit</button>
@@ -308,59 +317,55 @@
         });
       }
 
-      async function addTutorial() {
-        const title = document.getElementById("title").value;
-        const video_url = document.getElementById("video_url").value;
-        const description = document.getElementById("description").value;
-        const instructor = document.getElementById("instructor").value;
-        const poster_image = document.getElementById("poster_image").files[0];
-        const category = document.getElementById("category").value;
+      // async function addTutorial() {
+      //   const title = document.getElementById("title").value;
+      //   const video_url = document.getElementById("video_url").value;
+      //   const description = document.getElementById("description").value;
+      //   const instructor = document.getElementById("instructor").value;
+      //   const poster_image = document.getElementById("poster_image").files[0];
+      //   const category = document.getElementById("category").value;
 
-        if (!title || !video_url || !description || !instructor || !category) {
-          return alert("All fields are required.");
-        }
+      //   if (!title || !video_url || !description || !instructor || !category) {
+      //     return alert("All fields are required.");
+      //   }
 
-        await fetch("/admin/exercises", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            title,
-            video_url,
-            description,
-            instructor,
-            poster_image,
-            category,
-          }),
-        });
+      //   await fetch("/admin/exercises", {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       title,
+      //       video_url,
+      //       description,
+      //       instructor,
+      //       poster_image,
+      //       category,
+      //     }),
+      //   });
 
-        loadExercises();
-      }
+      //   loadExercises();
+      // }
 
       async function deleteExercise(id) {
         if (!confirm("Are you sure you want to delete this tutorial?")) return;
-        await fetch("/admin/exercises/" + id, { method: "DELETE" });
+        await fetch("/admin/students/" + id, { method: "DELETE" });
         loadExercises();
       }
 
       async function editExercise(id) {
-        const title = prompt("Enter new title:");
-        const video_url = prompt("Enter new video URL:");
-        const description = prompt("Enter new description:");
-        const instructor = prompt("Enter instructor name:");
-        const poster_image = prompt("Enter new poster image URL:");
-        const category = prompt("Enter new category:");
-        if (!title || !video_url || !description || !instructor || !category)
+        // const email = prompt("Enter new title:");
+        const fullname = prompt("Enter new fullname:");
+        const phone = prompt("Enter new phone number:");
+        const matric = prompt("Enter matric Number:");
+
+        if (!fullname || !phone || !matric)
           return alert("All fields are required.");
-        await fetch("/admin/exercises/" + id, {
+        await fetch("/admin/students/" + id, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            title,
-            video_url,
-            description,
-            instructor,
-            poster_image,
-            category,
+            fullname,
+            phone,
+            matric,
           }),
         });
         loadExercises();
@@ -383,12 +388,12 @@
         .catch(() => alert("Error loading profile"));
     </script>
 
-    <script>
-      document.getElementById("exerciseForm").onsubmit = async (e) => {
+    <!-- <script>
+      document.getElementById("studentForm").onsubmit = async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
 
-        const res = await fetch("/admin/add-exercise", {
+        const res = await fetch("/admin/add-student", {
           method: "POST",
           body: formData,
         });
@@ -397,6 +402,6 @@
         alert(msg);
         e.target.reset();
       };
-    </script>
+    </script> -->
   </body>
 </html>

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calicare Admin Dashboard</title>
+  <title>Courses</title>
   <link rel="stylesheet" href="/main.css" />
-  <link rel="icon" href="/Images/calicare logo.png" type="image/x-icon" />
+  <link rel="icon" href="/Images/JKT logo.png" type="image/x-icon" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -222,15 +222,12 @@
     <div class="main">
       <h1>Welcome Admin</h1> <span style="color: #28a745; font-weight: bold;" id="username"></span>
       <h2>Devices</h2>
-      <table id="users-table">
+      <table id="courses-table">
         <thead>
           <tr>
             <th>ID</th>
-            <th>Profile Picture</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Gender</th>
+            <th>Course Name</th>
+            <th>Course Code</th>
             <th>Edit</th>
             <th>Actions</th>
           </tr>
@@ -247,48 +244,46 @@
       const sidebar = document.getElementById('sidebar');
       sidebar.classList.toggle('show');
     }
-    async function loadUsers() {
-      const res = await fetch('/admin/users');
-      const users = await res.json();
-      const tbody = document.querySelector('#users-table tbody');
+    async function loadcourses() {
+      const res = await fetch('/admin/courses');
+      const courses = await res.json();
+      const tbody = document.querySelector('#courses-table tbody');
       tbody.innerHTML = '';
-      users.forEach(user => {
-        const profilePic = user.profile_picture ? user.profile_picture : '/Images/profile.webp';
+      courses.forEach(course => {
+       
         tbody.innerHTML += `
           <tr>
-            <td>${user.id}</td>
-            <td><img src="${profilePic}" alt="Profile Picture"></td>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.role}</td>
-            <td>${user.gender}</td>
-            <td><button onclick="editUser(${user.id})">Edit Role</button></td>
-            <td><button onclick="deleteUser(${user.id})">Delete</button></td>
+            <td>${course.id}</td>
+           <td>${course.course_name}</td>
+            <td>${course.course_code}</td>
+            <td><button onclick="editCourse(${course.id})">Edit</button></td>
+            <td><button onclick="deleteCourse(${course.id})">Delete</button></td>
+            
           </tr>
         `;
       });
     }
 
-    async function deleteUser(id) {
+    async function deleteCourse(id) {
       if (!confirm("Are you sure you want to delete this user?")) return;
-      await fetch('/admin/users/' + id, { method: 'DELETE' });
-      loadUsers();
+      await fetch('/admin/courses/' + id, { method: 'DELETE' });
+      loadcourses();
     }
 
-    async function editUser(id) {
-      const name = prompt("Enter new username:");
-      const email = prompt("Enter new email:");
-      const role = prompt("Enter new role (user/admin):");
-      if (!name || !email || !role) return alert("All fields are required.");
-      await fetch('/admin/users/' + id, {
+    async function editCourse(id) {
+      const course_name = prompt("Enter new Course name:");
+      const course_code = prompt("Enter new course code:");
+      if (!course_name || !course_code) return alert("All fields are required.");
+     
+      await fetch('/admin/courses/' + id, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: name, email, role })
+        body: JSON.stringify({ course_name, course_code })
       });
-      loadUsers();
+      loadcourses();
     }
 
-    loadUsers();
+    loadcourses();
     fetch("/getProfile")
       .then(res => res.json())
       .then(user => {
