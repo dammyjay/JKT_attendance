@@ -1,6 +1,8 @@
 const WebSocket = require("ws");
 const express = require("express");
 const path = require("path");
+const bodyParser = require("body-parser");
+const axios = require("axios");
 const cors = require("cors");
 const session = require("express-session");
 const PgSession = require("connect-pg-simple")(session);
@@ -1124,7 +1126,6 @@ app.get("/admin/students", async (req, res) => {
   res.json(result.rows);
 });
 
-
 app.post("/admin/students", async (req, res) => {
   const { title, video_url, description, instructor, poster_image, category } =
     req.body;
@@ -1158,7 +1159,6 @@ app.put("/admin/students/:id", async (req, res) => {
   );
   res.sendStatus(200);
 });
-
 
 app.delete("/admin/students/:id", async (req, res) => {
   await pool.query("DELETE FROM students WHERE id = $1", [req.params.id]);
@@ -1413,6 +1413,152 @@ app.get("/api/courses", async (req, res) => {
     res.status(500).send("Error fetching courses");
   }
 });
+
+// PAYSTACK PAYMENT VERIFICATION
+app.post("/verify-payment", async (req, res) => {
+  const { reference, email, fullName } = req.body;
+
+  try {
+    console.log(
+      "🔍 Verifying payment with ref:",
+      reference,
+      "Email:",
+      email,
+      "Full Name:",
+      fullName
+    );
+
+    const response = await axios.get(
+      `https://api.paystack.co/transaction/verify/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`, // Make sure this is set in your .env file
+        },
+      }
+    );
+    console.log("✅ Paystack Response:", response.data);
+
+    const payment = response.data.data;
+
+    if (payment.status === "success") {
+      const amount = payment.amount / 100;
+
+      // Save transaction to DB
+      await pool.query(
+        `INSERT INTO transactions (fullname, email, amount, reference, status)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [fullName, email, amount, reference, "success"]
+      );
+
+      return res.json({
+        success: true,
+        message: "Payment verified successfully",
+      });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, message: "Payment verification failed" });
+    }
+  } catch (error) {
+    console.error(
+      "❌ Error verifying payment:",
+      error.response?.data || error.message
+    );
+    return res.status(500).json({
+      success: false,
+      message:
+        error.response?.data?.message ||
+        "Server error during payment verification",
+    });
+  }
+});
+
+// app.post("/initialize-payment", async (req, res) => {
+//   const { email, amount, fullName } = req.body;
+
+//   try {
+//     const response = await axios.post(
+//       "https://api.paystack.co/transaction/initialize",
+//       {
+//         email,
+//         amount: amount * 100, // in kobo
+//         metadata: {
+//           custom_fields: [
+//             {
+//               display_name: "Full Name",
+//               variable_name: "full_name",
+//               value: fullName,
+//             },
+//           ],
+//         },
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     const { authorization_url, reference } = response.data.data;
+//     return res.json({ success: true, authorization_url, reference });
+//   } catch (error) {
+//     console.error(
+//       "Error initializing payment:",
+//       error.response?.data || error.message
+//     );
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Failed to initiate payment" });
+//   }
+// });
+
+// app.post("/verify-payment", async (req, res) => {
+//   const { reference, email, fullName } = req.body;
+
+//   try {
+//     const response = await axios.get(
+//       `https://api.paystack.co/transaction/verify/${reference}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     const payment = response.data?.data;
+
+//     if (!payment || payment.status !== "success") {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Payment not successful" });
+//     }
+
+//     const amount = payment.amount / 100;
+
+//     // Save to DB
+//     await pool.query(
+//       `INSERT INTO transactions (full_name, email, amount, reference, status)
+//        VALUES ($1, $2, $3, $4, $5)`,
+//       [fullName, email, amount, reference, "success"]
+//     );
+
+//     return res.json({
+//       success: true,
+//       message: "Payment verified successfully",
+//     });
+//   } catch (error) {
+//     console.error(
+//       "❌ Verify Payment Error:",
+//       error.response?.data || error.message
+//     );
+//     console.log("✅ PAYSTACK KEY LOADED:", process.env.PAYSTACK_SECRET_KEY);
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Server error during verification" });
+//   }
+// });
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

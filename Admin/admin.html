@@ -132,11 +132,36 @@
         justify-content: space-between;
         text-align: center;
       }
+      .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        /* allows horizontal scroll if needed */
+        -webkit-overflow-scrolling: touch;
+        /* smooth scrolling on iOS */
+      }
+      .user-table th,
+      .user-table td {
+        padding: 8px 6px;
+        font-size: 12px;
+      }
+
+      /* Make profile images smaller on mobile */
+      .user-table img {
+        width: 35px !important;
+        height: 35px !important;
+      }
 
       @media (max-width: 768px) {
         body {
           flex-direction: column;
         }
+        .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        /* allows horizontal scroll if needed */
+        -webkit-overflow-scrolling: touch;
+        /* smooth scrolling on iOS */
+      }
 
         .sidebar {
           position: fixed;
@@ -232,25 +257,26 @@
             </button>
           </div>
         </div>
-
-        <table id="users-table" class="users-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Profile Picture</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Gender</th>
-              <th>Tag</th>
-              <th>Edit</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <!-- Data loaded by JavaScript -->
-          </tbody>
-        </table>
+        <div class="table-responsive">
+          <table id="users-table" class="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Profile Picture</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Gender</th>
+                <th>Tag</th>
+                <th>Edit</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Data loaded by JavaScript -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
